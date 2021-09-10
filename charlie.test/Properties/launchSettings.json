@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "charlie.test": {
+      "commandName": "Project"
+    }
+  }
+}
