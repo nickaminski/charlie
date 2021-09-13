@@ -116,46 +116,5 @@ namespace charlie.bll.providers
                     return JsonConvert.DeserializeObject<TextQuestionContent>(json);
             }
         }
-
-        /*
-        public AnswerContent getAnswerContent2(string questionType, string json)
-        {
-            questionType = questionType.Trim().ToLower();
-
-            if (questionType == "short answer" || questionType == "paragraph")
-            {
-                return JsonConvert.DeserializeObject<TextQuestionContent>(json);
-            }
-            if (questionType == "multuple choie" || questionType == "checkboxes" || questionType == "dropdown")
-            {
-                return JsonConvert.DeserializeObject<ListAnswerContent>(json);
-            }
-            if (questionType == "file upload")
-            {
-                return JsonConvert.DeserializeObject<FileQuestionContent>(json);
-            }
-            if (questionType == "linear scaale")
-            {
-                return JsonConvert.DeserializeObject<ScaleQuestionContent>(json);
-            }
-            if (questionType == "multiple choice grid" || questionType == "checkbox grid")
-            {
-                return JsonConvert.DeserializeObject<GridQuestionContent>(json);
-            }
-            if (questionType == "date")
-            {
-                return JsonConvert.DeserializeObject<DateQuestionContent>(json);
-            }
-            if (questionType == "time")
-            {
-                return JsonConvert.DeserializeObject<TimeQuestionContent>(json);
-            }
-            if (questionType == "location")
-            {
-                return JsonConvert.DeserializeObject<LocationQuestionContent>(json);
-            }
-            return JsonConvert.DeserializeObject<TextQuestionContent>(json);
-        }
-        */
     }
 }

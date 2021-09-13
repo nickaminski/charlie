@@ -79,8 +79,8 @@ namespace charlie.dto
     {
         public double centerLat { get; set; }
         public double centerLon { get; set; }
-        public double lat { get; set; }
-        public double lon { get; set; }
+        public double? lat { get; set; }
+        public double? lon { get; set; }
     }
 
     public class TextQuestionContent : AnswerContent
