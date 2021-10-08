@@ -70,7 +70,11 @@ namespace charlie.api.Controllers
             if (results)
             {
                 var userName = System.Text.Encoding.UTF8.GetBytes(string.Format("Pollar:{0}", clientIp));
-                var packet = new MessagePacket() { Username = System.Convert.ToBase64String(userName) , Message = response.selectedChoice, Timestamp = MessageHub.CurrentTime, UserId = response.id };
+                var packet = new MessagePacket() { 
+                    Username = System.Convert.ToBase64String(userName),
+                    Message = response.selectedChoice, 
+                    Timestamp = MessageHub.CurrentTime, UserId = response.id 
+                };
                 await _messageHub.Clients.Group(string.Format("Pollar-{0}", response.id)).SendAsync("broadcastToChannel", packet);
             }
 
