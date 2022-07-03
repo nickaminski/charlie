@@ -28,7 +28,9 @@ namespace charlie.api
         {
             services.AddHttpClient();
             services.AddSingleton<ILoggerFormatter, LoggerFormatter>();
+            services.AddSingleton<ITimeProvider, TimeProvider>();
             services.AddSingleton<ILogWriter, TimedWriter>();
+            services.AddSingleton<IRandomNumberProvider, RandomNumberProvider>();
 
             services.AddHostedService<LoggingService>();
 

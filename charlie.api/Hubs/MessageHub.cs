@@ -10,22 +10,16 @@ namespace charlie.api.Hubs
 {
     public class MessageHub : Hub
     {
-        public static long CurrentTime
-        {
-            get
-            {
-                return (long)((DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds + 0.5);
-            }
-        }
-
         private static IEnumerable<string> reserved_names = new List<string> { "Pollar" };
 
         ILogWriter _logger;
         IUserProvider _userProv;
+        ITimeProvider _time;
 
-        public MessageHub(ILogWriter logger, IUserProvider userProv)
+        public MessageHub(ILogWriter logger, IUserProvider userProv, ITimeProvider time)
         {
             _logger = logger;
+            _time = time;
             _userProv = userProv;
         }
 
@@ -109,14 +103,14 @@ namespace charlie.api.Hubs
                 if (packet.Username != "System")
                 {
                     packet.Username = GetUsername();
-                    packet.Timestamp = CurrentTime;
+                    packet.Timestamp = _time.CurrentTimeStamp();
                     packet.UserId = Context.Items["UserId"].ToString();
                 }
 
                 var channelId = packet.ChannelId;
-                if (channelId != null && !string.IsNullOrEmpty(channelId.ToString()))
+                if (!string.IsNullOrEmpty(channelId))
                 {
-                    await Clients.Group(channelId.ToString()).SendAsync("broadcastToChannel", packet);
+                    await Clients.Group(channelId).SendAsync("broadcastToChannel", packet);
                     _logger.ServerLogInfo(packet.ToString());
                 }
             }
@@ -128,7 +122,7 @@ namespace charlie.api.Hubs
             MessagePacket packet = new MessagePacket {
                 Id = new Guid().ToString(),
                 Message = message,
-                Timestamp = CurrentTime,
+                Timestamp = _time.CurrentTimeStamp(),
                 Username = "System",
                 ChannelId = channel
             };

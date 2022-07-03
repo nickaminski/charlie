@@ -15,14 +15,20 @@ namespace charlie.api.Controllers
         IPollProvider _pollProvider;
         IPollResultsProvider _resultsProvider;
         ILogWriter _logger;
+        ITimeProvider _time;
         IHubContext<MessageHub> _messageHub;
 
-        public PollController(ILogWriter logger, IPollProvider pollProvider, IPollResultsProvider resultsProvider, IHubContext<MessageHub> messageHub)
+        public PollController(ILogWriter logger, 
+                              IPollProvider pollProvider, 
+                              IPollResultsProvider resultsProvider, 
+                              IHubContext<MessageHub> messageHub,
+                              ITimeProvider time)
         {
             _pollProvider = pollProvider;
             _resultsProvider = resultsProvider;
             _logger = logger;
             _messageHub = messageHub;
+            _time = time;
         }
 
         [HttpPut("[action]")]
@@ -73,7 +79,7 @@ namespace charlie.api.Controllers
                 var packet = new MessagePacket() { 
                     Username = System.Convert.ToBase64String(userName),
                     Message = response.selectedChoice, 
-                    Timestamp = MessageHub.CurrentTime, UserId = response.id 
+                    Timestamp = _time.CurrentTimeStamp(), UserId = response.id 
                 };
                 await _messageHub.Clients.Group(string.Format("Pollar-{0}", response.id)).SendAsync("broadcastToChannel", packet);
             }

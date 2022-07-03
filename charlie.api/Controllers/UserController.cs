@@ -63,6 +63,16 @@ namespace charlie.api.Controllers
             return await _userProv.SaveUser(userProfile);
         }
 
+        [HttpPatch]
+        public async Task<UserProfile> Patch([FromBody] UserProfile userProfile)
+        {
+            if (userProfile == null || string.IsNullOrEmpty(userProfile.UserId) || string.IsNullOrEmpty(userProfile.Username))
+            {
+                return null;
+            }
+            return await _userProv.SaveUser(userProfile);
+        }
+
         [HttpDelete]
         public async Task<bool> Delete([FromQuery] string id)
         {
