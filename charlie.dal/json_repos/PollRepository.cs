@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
-using charlie.dto;
+using charlie.dto.Poll;
 
 namespace charlie.dal.json_repos
 {

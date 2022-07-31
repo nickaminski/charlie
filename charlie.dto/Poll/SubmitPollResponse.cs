@@ -1,4 +1,4 @@
-﻿namespace charlie.dto
+﻿namespace charlie.dto.Poll
 {
     public class SubmitPollResponse
     {

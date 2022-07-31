@@ -1,6 +1,7 @@
 ﻿using charlie.api.Hubs;
 using charlie.bll.interfaces;
 using charlie.dto;
+using charlie.dto.Poll;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections.Generic;

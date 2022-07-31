@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using charlie.dto;
+using charlie.dto.Card;
 
 namespace charlie.dal.json_repos
 {

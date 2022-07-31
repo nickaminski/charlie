@@ -1,4 +1,4 @@
-﻿namespace charlie.dto
+﻿namespace charlie.dto.Card
 {
     public class CardSetCard
     {

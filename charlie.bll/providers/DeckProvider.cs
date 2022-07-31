@@ -1,7 +1,7 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dal;
 using charlie.dal.interfaces;
-using charlie.dto;
+using charlie.dto.Card;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -1,4 +1,4 @@
-﻿using charlie.dto;
+﻿using charlie.dto.Card;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -1,7 +1,7 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dal.interfaces;
 using charlie.dal.json_repos;
-using charlie.dto;
+using charlie.dto.Card;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace charlie.bll.providers
 
             if (results == null || results.Count() == 0)
             {
-                _logger.ServerLogInfo(string.Format("Fetching all card sets from YGoPro"));
+                _logger.ServerLogInfo("Fetching all card sets from YGoPro");
                 var cardSetData = await _ygoRepo.GetAllCardSets();
                 await _cardSetRepo.WriteCardSetData(cardSetData);
 
@@ -40,7 +40,7 @@ namespace charlie.bll.providers
             }
             else
             {
-                _logger.ServerLogInfo(string.Format("Returning cached all card sets from local"));
+                _logger.ServerLogInfo("Returning cached all card sets from local");
             }
 
             if (Int32.TryParse(maxYear, out int year))

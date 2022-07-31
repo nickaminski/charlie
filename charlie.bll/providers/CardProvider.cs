@@ -1,6 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dal.interfaces;
-using charlie.dto;
+using charlie.dto.Card;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,13 +23,13 @@ namespace charlie.bll.providers
 
         public async Task AddToCollection(IEnumerable<Card> newCards)
         {
-            _logger.ServerLogInfo(string.Format("Adding {0} cards to collection", newCards.Count()));
+            _logger.ServerLogInfo("Adding {0} cards to collection", newCards.Count());
             await _cardRepo.AddToCollection(newCards);
         }
 
         public void DeleteCollection()
         {
-            _logger.ServerLogInfo(string.Format("Deleting collection"));
+            _logger.ServerLogInfo("Deleting collection");
             _cardRepo.DeleteCollection();
         }
 
@@ -39,7 +39,7 @@ namespace charlie.bll.providers
 
             if (results == null || results.Count() == 0)
             {
-                _logger.ServerLogInfo(string.Format("Fetching set: {0} from YGoPro", setName));
+                _logger.ServerLogInfo("Fetching set: {0} from YGoPro", setName);
                 var cardSetData = await _ygoRepo.GetAllCardsInSet(setName);
 
                 if (!string.IsNullOrEmpty(cardSetData))
@@ -54,7 +54,7 @@ namespace charlie.bll.providers
             }
             else
             {
-                _logger.ServerLogInfo(string.Format("Returning cached set: {0} from local", setName));
+                _logger.ServerLogInfo("Returning cached set: {0} from local", setName);
                 return results;
             }
         }
@@ -65,7 +65,7 @@ namespace charlie.bll.providers
 
             if (results == null)
             {
-                _logger.ServerLogInfo(string.Format("Fetching card id: {0} from YGoPro", id));
+                _logger.ServerLogInfo("Fetching card id: {0} from YGoPro", id);
                 var cardSetData = await _ygoRepo.GetCardById(id);
 
                 if (!string.IsNullOrEmpty(cardSetData))
@@ -80,14 +80,14 @@ namespace charlie.bll.providers
             }
             else
             {
-                _logger.ServerLogInfo(string.Format("Returning cached card id: {0} from local", id));
+                _logger.ServerLogInfo("Returning cached card id: {0} from local", id);
                 return results;
             }
         }
 
         public async Task<CardCollection> GetCollection()
         {
-            _logger.ServerLogInfo(string.Format("Retrieving collection"));
+            _logger.ServerLogInfo("Retrieving collection");
             return await _cardRepo.GetCollection();
         }
     }

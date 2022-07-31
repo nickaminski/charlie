@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace charlie.dto
+namespace charlie.dto.User
 {
     public class UserProfile
     {

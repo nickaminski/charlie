@@ -1,4 +1,4 @@
-﻿using charlie.dto;
+﻿using charlie.dto.Poll;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,8 +1,7 @@
-﻿namespace charlie.dto
+﻿namespace charlie.dto.User
 {
     public class CreateUser
     {
-        public string UserId { get; set; }
         public string Username { get; set; }
     }
 }

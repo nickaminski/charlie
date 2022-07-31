@@ -1,6 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dal.interfaces;
-using charlie.dto;
+using charlie.dto.User;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,9 +20,9 @@ namespace charlie.bll.providers
 
         public async Task<UserProfile> CreateUser(CreateUser createUser)
         {
-            _logger.ServerLogInfo(string.Format("creating new user {0}:{1}", createUser.UserId, createUser.Username));
+            _logger.ServerLogInfo("creating new user {0}", createUser.Username);
             return await _userRepo.SaveUser(new UserProfile() { 
-                UserId = createUser.UserId,
+                UserId = Guid.NewGuid().ToString(),
                 Username = createUser.Username,
                 Channels = new HashSet<string> { "public" },
                 CreatedDate = DateTime.UtcNow,
@@ -33,27 +33,38 @@ namespace charlie.bll.providers
 
         public async Task<bool> DeleteUser(string id)
         {
-            _logger.ServerLogInfo(string.Format("deleting user {0}", id));
+            _logger.ServerLogInfo("deleting user {0}", id);
             return await _userRepo.DeleteUser(id);
         }
 
         public async Task<UserProfile> GetUserById(string id)
         {
-            _logger.ServerLogInfo(string.Format("provider getting user {0}", id));
+            _logger.ServerLogInfo("provider getting user {0}", id);
             return await _userRepo.GetUserProfileById(id);
         }
 
         public async Task<IEnumerable<UserProfile>> GetUsers()
         {
-            _logger.ServerLogInfo(string.Format("getting all users"));
+            _logger.ServerLogInfo("getting all users");
             return await _userRepo.GetUsers();
         }
 
-        public async Task<UserProfile> SaveUser(UserProfile user)
+        public async Task<UserProfile> SaveUser(UpdateUser user)
         {
-            _logger.ServerLogInfo(string.Format("saving user data {0}:{1}", user.UserId, user.Username));
-            user.UpdatedDate = DateTime.UtcNow;
-            return await _userRepo.SaveUser(user);
+            var currentUser = await _userRepo.GetUserProfileById(user.Id.ToString());
+
+            if (currentUser == null)
+            {
+                _logger.ServerLogWarning("did not find user {0}", user.Id);
+                return null;
+            }
+
+            _logger.ServerLogInfo("saving user data {0}", user.Username);
+
+            if (!string.IsNullOrEmpty(user.Username)) currentUser.Username = user.Username;
+
+            currentUser.UpdatedDate = DateTime.UtcNow;
+            return await _userRepo.SaveUser(currentUser);
         }
     }
 }

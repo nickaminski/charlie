@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace charlie.dto
+namespace charlie.dto.Card
 {
     public class CardPrice
     {

@@ -1,6 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dal.interfaces;
-using charlie.dto;
+using charlie.dto.Poll;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

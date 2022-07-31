@@ -1,5 +1,5 @@
 ﻿using charlie.bll.interfaces;
-using charlie.dto;
+using charlie.dto.User;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,12 +11,10 @@ namespace charlie.api.Controllers
     public class UserController : ControllerBase
     {
         private IUserProvider _userProv;
-        private ILogWriter _logger;
 
-        public UserController(IUserProvider userProv, ILogWriter logger)
+        public UserController(IUserProvider userProv)
         {
             _userProv = userProv;
-            _logger = logger;
         }
 
         [HttpGet]
@@ -28,7 +26,6 @@ namespace charlie.api.Controllers
             }
             else
             {
-                _logger.ServerLogInfo(string.Format("User Controller Get"));
                 var user = await _userProv.GetUserById(id);
                 if (user != null)
                     return Ok(user);
@@ -44,29 +41,20 @@ namespace charlie.api.Controllers
         }
 
         [HttpPost]
-        public async Task<UserProfile> Post([FromBody] CreateUser createUser)
+        public async Task<UserProfile> Create([FromBody] CreateUser createUser)
         {
-            if (createUser == null || string.IsNullOrEmpty(createUser.UserId) || string.IsNullOrEmpty(createUser.Username))
+            if (createUser == null || string.IsNullOrEmpty(createUser.Username))
             {
                 return null;
             }
             return await _userProv.CreateUser(createUser);
         }
 
-        [HttpPut]
-        public async Task<UserProfile> Put([FromBody] UserProfile userProfile)
-        {
-            if (userProfile == null || string.IsNullOrEmpty(userProfile.UserId) || string.IsNullOrEmpty(userProfile.Username))
-            {
-                return null;
-            }
-            return await _userProv.SaveUser(userProfile);
-        }
-
         [HttpPatch]
-        public async Task<UserProfile> Patch([FromBody] UserProfile userProfile)
+        [HttpPut]
+        public async Task<UserProfile> Update([FromBody] UpdateUser userProfile)
         {
-            if (userProfile == null || string.IsNullOrEmpty(userProfile.UserId) || string.IsNullOrEmpty(userProfile.Username))
+            if (userProfile == null || string.IsNullOrEmpty(userProfile.Username))
             {
                 return null;
             }

@@ -1,6 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dal.interfaces;
-using charlie.dto;
+using charlie.dto.Form;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace charlie.bll.providers
 
         public async Task<FormModel> GetById(string id)
         {
-            _logger.ServerLogInfo(string.Format("Getting form {0}", id));
+            _logger.ServerLogInfo("Getting form {0}", id);
             var form = await _formRepo.GetForm(id);
 
             if (form == null)

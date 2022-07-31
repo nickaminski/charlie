@@ -134,5 +134,20 @@ namespace charlie.bll
                 ClientIp = "127.0.0.1"
             });
         }
+
+        public void ServerLogInfo(string format, params object[] args)
+        {
+            ServerLogInfo(string.Format(format, args));
+        }
+
+        public void ServerLogWarning(string format, params object[] args)
+        {
+            ServerLogWarning(string.Format(format, args));
+        }
+
+        public void ServerLogError(string format, params object[] args)
+        {
+            ServerLogError(string.Format(format, args));
+        }
     }
 }

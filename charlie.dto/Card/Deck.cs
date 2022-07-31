@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace charlie.dto
+namespace charlie.dto.Card
 {
     public class Deck
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace charlie.dto
+namespace charlie.dto.Poll
 {
     public class PollResults
     {

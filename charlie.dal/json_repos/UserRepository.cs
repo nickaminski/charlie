@@ -1,5 +1,5 @@
 ﻿using charlie.dal.interfaces;
-using charlie.dto;
+using charlie.dto.User;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Collections.Generic;

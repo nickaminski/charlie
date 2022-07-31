@@ -1,5 +1,5 @@
 ﻿using charlie.bll.interfaces;
-using charlie.dto;
+using charlie.dto.Card;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;

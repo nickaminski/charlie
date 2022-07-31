@@ -112,6 +112,7 @@ namespace charlie.api
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<MessageHub>("/chat");
+                endpoints.MapHub<CasinoHub>("/casino");
             });
         }
     }

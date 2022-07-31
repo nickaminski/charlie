@@ -1,5 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dto;
+using charlie.dto.User;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -59,12 +60,11 @@ namespace charlie.api.Hubs
 
                 if (!reserved_names.Any(x => channel.Split("-")[0].Equals(x, StringComparison.OrdinalIgnoreCase)))
                 {
-                    _logger.ServerLogInfo(string.Format("client joining channel: {0}", channel));
+                    _logger.ServerLogInfo("client joining channel: {0}", channel);
                     var user = await _userProv.GetUserById(Context.Items["UserId"].ToString());
                     user.Channels.Add(channel);
-                    await _userProv.SaveUser(user);
-                    var message = string.Format("{0} has joined {1}", GetUsername(), channel);
-                    _logger.ServerLogInfo(message);
+                    await _userProv.SaveUser(new UpdateUser() { Id = user.UserId });
+                    _logger.ServerLogInfo("{0} has joined {1}", GetUsername(), channel);
                 }
                 return true;
             } 
