@@ -9,6 +9,7 @@ namespace charlie.dal.interfaces
         Task<IEnumerable<Card>> GetAllCardsInSet(string setName);
         Task WriteCardDataToSetFile(string data, string setName);
         Task<Card> GetById(int id);
+        Task<Card> GetByName(string name);
         Task WriteCardDataToAllFile(string data);
         Task<CardCollection> GetCollection();
         Task AddToCollection(IEnumerable<Card> newCards);

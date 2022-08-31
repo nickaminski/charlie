@@ -51,7 +51,24 @@ namespace charlie.dal.json_repos
             if (list == null)
                 list = new List<Card>();
 
-            var index = list.BinarySearch(new Card() { id = id }, new CardComparer());
+            var index = list.BinarySearch(new Card() { id = id }, new CardIdComparer());
+            if (index >= 0)
+                return list.ElementAt(index);
+            return null;
+        }
+
+        public async Task<Card> GetByName(string name)
+        {
+            var filePath = getAllCardsFilePath();
+            if (!File.Exists(filePath))
+                File.Create(filePath).Close();
+
+            var jsonString = await File.ReadAllTextAsync(filePath);
+            var list = JsonConvert.DeserializeObject<List<Card>>(jsonString);
+            if (list == null)
+                list = new List<Card>();
+
+            var index = list.BinarySearch(new Card() { name = name }, new CardNameComparer());
             if (index >= 0)
                 return list.ElementAt(index);
             return null;
@@ -67,7 +84,7 @@ namespace charlie.dal.json_repos
             var list = JsonConvert.DeserializeObject<List<Card>>(jsonString);
             if (list == null)
                 list = new List<Card>();
-            var newCard = JsonConvert.DeserializeObject<List<Card>>(data).FirstOrDefault();
+            var newCard = JsonConvert.DeserializeObject<Card>(data);
 
             if (list.Count == 0)
             {

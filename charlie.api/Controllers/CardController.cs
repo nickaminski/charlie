@@ -48,6 +48,13 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet("[action]")]
+        public async Task<Card> GetCardByName([FromQuery]string name)
+        {
+            _logger.ServerLogInfo("/Card/GetCardByName");
+            return await _cardProv.GetCardByName(name);
+        }
+
+        [HttpGet("[action]")]
         public async Task<Deck> GetDeckById([FromQuery]string guid)
         {
             _logger.ServerLogInfo("/Card/GetDeckById");

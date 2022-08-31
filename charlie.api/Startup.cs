@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
@@ -104,6 +105,14 @@ namespace charlie.api
                     "charlie API"
                     );
                 setupAction.RoutePrefix = "api";
+            });
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), Configuration["CardImagesPath"]);
+            Directory.CreateDirectory(path);
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileProvider = new PhysicalFileProvider(path),
+                RequestPath = "/files"
             });
 
             app.UseRouting();

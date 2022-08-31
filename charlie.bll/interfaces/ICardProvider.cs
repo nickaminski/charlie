@@ -8,6 +8,7 @@ namespace charlie.bll.interfaces
     {
         Task<IEnumerable<Card>> GetAllCardsInSet(string setName);
         Task<Card> GetCardById(int id);
+        Task<Card> GetCardByName(string name);
         Task AddToCollection(IEnumerable<Card> newCards);
         Task<CardCollection> GetCollection();
         void DeleteCollection();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace charlie.dto.Card
@@ -20,10 +21,26 @@ namespace charlie.dto.Card
         public List<CardPrice> card_prices { get; set; }
     }
 
-    public class CardComparer : IComparer<Card>
+    public class CardNameComparer : IComparer<Card>
     {
         public int Compare([AllowNull] Card x, [AllowNull] Card y)
         {
+            if (x == null && y == null) return 0;
+            if (x == null) return Int32.MinValue;
+            if (y == null) return Int32.MaxValue;
+
+            return x.name.CompareTo(y.name);
+        }
+    }
+
+    public class CardIdComparer : IComparer<Card>
+    {
+        public int Compare([AllowNull] Card x, [AllowNull] Card y)
+        {
+            if (x == null && y == null) return 0;
+            if (x == null) return Int32.MinValue;
+            if (y == null) return Int32.MaxValue;
+
             return x.id - y.id;
         }
     }

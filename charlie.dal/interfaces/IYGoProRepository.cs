@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using charlie.dto.Card;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace charlie.dal.interfaces
 {
@@ -6,6 +8,8 @@ namespace charlie.dal.interfaces
     {
         Task<string> GetAllCardsInSet(string setName);
         Task<string> GetCardById(int id);
+        Task<string> GetCardByName(string name);
         Task<string> GetAllCardSets();
+        Task DownloadImages(IEnumerable<CardImage> cardImages, string basePath);
     }
 }

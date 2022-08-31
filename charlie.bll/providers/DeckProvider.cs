@@ -21,8 +21,8 @@ namespace charlie.bll.providers
         {
             if (Guid.TryParse(id, out var guid))
             {
-                await _repo.DeleteDeck(guid);
-                return false;
+                
+                return await _repo.DeleteDeck(guid);
             }
             return false;
         }

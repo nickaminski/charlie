@@ -10,7 +10,7 @@ namespace charlie.security
     {
         public static string Encrypt(string data, string key)
         {
-            using (AesCryptoServiceProvider csp = new AesCryptoServiceProvider())
+            using (Aes csp = Aes.Create())
             {
                 byte[] keyArr = Convert.FromBase64String(key);
                 byte[] keyArrBytes32 = new byte[32];
@@ -25,7 +25,7 @@ namespace charlie.security
 
         public static string Decrypt(string data, string key)
         {
-            using (AesCryptoServiceProvider csp = new AesCryptoServiceProvider())
+            using (Aes csp = Aes.Create())
             {
                 byte[] keyArr = Convert.FromBase64String(key);
                 byte[] keyArrBytes32 = new byte[32];
@@ -65,7 +65,7 @@ namespace charlie.security
 
         public static byte[] SHA256_Hash(byte[] value)
         {
-            return new SHA256CryptoServiceProvider().ComputeHash(value);
+            return SHA256.Create().ComputeHash(value);
         }
 
         public static string ByteArrayToHexString(byte[] ba)
