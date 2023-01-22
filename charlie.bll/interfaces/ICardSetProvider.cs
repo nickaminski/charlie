@@ -7,5 +7,6 @@ namespace charlie.bll.interfaces
     public interface ICardSetProvider : IProvider<CardSet>
     {
         Task<IEnumerable<CardSet>> GetSets(string maxYear);
+        Task<CardSet> GetSetByName(string name);
     }
 }

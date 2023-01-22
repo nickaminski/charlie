@@ -1,7 +1,6 @@
 ﻿using charlie.dal.interfaces;
 using charlie.dto.Card;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,9 +14,11 @@ namespace charlie.dal.json_repos
     {
         private string cardSetUrl = "https://db.ygoprodeck.com/api/v7/cardsets.php";
         private string cardUrl = "https://db.ygoprodeck.com/api/v7/cardinfo.php";
+        private string ygoImageUrl = "https://images.ygoprodeck.com/images/";
         private readonly IHttpClientFactory _clientFactory;
         private readonly IConfiguration _configuration;
         private readonly CancellationTokenSource _cancellationTokenSource;
+        private HttpClient _httpClient;
 
         public YGoProRepository(IHttpClientFactory clientFactory, IConfiguration configuration)
         {
@@ -78,32 +79,68 @@ namespace charlie.dal.json_repos
             return string.Empty;
         }
 
-        public async Task DownloadImages(IEnumerable<CardImage> cardImages, string basePath)
+        public IEnumerable<Task> DownloadImages(IEnumerable<CardImage> cardImages, string basePath)
         {
-            var client = _clientFactory.CreateClient();
-            var tasks = cardImages.SelectMany(x => new List<Task<HttpResponseMessage>>() { client.GetAsync(x.image_url), client.GetAsync(x.image_url_small) });
+            if (_httpClient == null)
+                _httpClient = _clientFactory.CreateClient();
 
-            var results = await Task.WhenAll(tasks);
+            var tasks = new List<Task>();
 
-            for(var i = 0; i < cardImages.Count(); i++)
+            foreach (var cardImage in cardImages)
             {
-                var image = results[i * 2];
-                var smallImage = results[(i * 2) + 1];
+                tasks.Add(DownloadImages(cardImage, basePath));
+            }
 
-                var contentTypeHeader = image.Content.Headers.FirstOrDefault(x => x.Key.Equals("Content-Type"));
-                var meta = cardImages.ElementAt(i);
-                if (image.IsSuccessStatusCode && contentTypeHeader.Value.Any(x => x.Equals("image/jpeg")))
-                {
-                    File.WriteAllBytes(string.Format("{0}/cards/{1}.jpg", basePath, meta.id), 
-                                       await image.Content.ReadAsByteArrayAsync());
-                }
+            return tasks;
+        }
 
-                contentTypeHeader = smallImage.Content.Headers.FirstOrDefault(x => x.Key.Equals("Content-Type"));
-                if (smallImage.IsSuccessStatusCode && contentTypeHeader.Value.Any(x => x.Equals("image/jpeg")))
-                {
-                    File.WriteAllBytes(string.Format("{0}/cards_small/{1}.jpg", basePath, meta.id), 
-                                       await smallImage.Content.ReadAsByteArrayAsync());
-                }
+        public Task DownloadImages(CardImage cardImage, string basePath)
+        {
+            if (_httpClient == null)
+                _httpClient = _clientFactory.CreateClient();
+
+            var tasks = new List<Task>();
+
+            if (!File.Exists(string.Format("{0}/{1}/{2}.jpg", basePath, "cards", cardImage.id)))
+            {
+                tasks.Add(
+                    _httpClient.GetAsync(string.Format("{0}cards/{1}.jpg", ygoImageUrl, cardImage.id))
+                      .ContinueWith(x =>
+                        WriteImage(x.Result, string.Format("{0}/{1}/{2}.jpg", basePath, "cards", cardImage.id))
+                      )
+                );
+            }
+
+            if (!File.Exists(string.Format("{0}/{1}/{2}.jpg", basePath, "cards_small", cardImage.id)))
+            {
+                tasks.Add(
+                    _httpClient.GetAsync(string.Format("{0}cards_small/{1}.jpg", ygoImageUrl, cardImage.id))
+                      .ContinueWith(x =>
+                        WriteImage(x.Result, string.Format("{0}/{1}/{2}.jpg", basePath, "cards_small", cardImage.id))
+                      )
+                );
+            }
+
+            if (!File.Exists(string.Format("{0}/{1}/{2}.jpg", basePath, "cards_cropped", cardImage.id)))
+            {
+                tasks.Add(
+                    _httpClient.GetAsync(string.Format("{0}cards_cropped/{1}.jpg", ygoImageUrl, cardImage.id))
+                      .ContinueWith(x =>
+                        WriteImage(x.Result, string.Format("{0}/{1}/{2}.jpg", basePath, "cards_cropped", cardImage.id))
+                      )
+                );
+            }
+
+            return Task.WhenAll(tasks);
+        }
+
+        private async Task WriteImage(HttpResponseMessage x, string writePath)
+        {
+            var contentTypeHeader = x.Content.Headers.FirstOrDefault(x => x.Key.Equals("Content-Type"));
+            if (x.IsSuccessStatusCode && (contentTypeHeader.Value.Any(x => x.Equals("image/jpeg")) || contentTypeHeader.Value.Any(x => x.Equals("image/jpg"))))
+            {
+                File.WriteAllBytes(writePath,
+                                   await x.Content.ReadAsByteArrayAsync());
             }
         }
     }

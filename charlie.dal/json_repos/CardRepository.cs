@@ -51,10 +51,7 @@ namespace charlie.dal.json_repos
             if (list == null)
                 list = new List<Card>();
 
-            var index = list.BinarySearch(new Card() { id = id }, new CardIdComparer());
-            if (index >= 0)
-                return list.ElementAt(index);
-            return null;
+            return list.FirstOrDefault(x => x.id == id);
         }
 
         public async Task<Card> GetByName(string name)
@@ -68,10 +65,7 @@ namespace charlie.dal.json_repos
             if (list == null)
                 list = new List<Card>();
 
-            var index = list.BinarySearch(new Card() { name = name }, new CardNameComparer());
-            if (index >= 0)
-                return list.ElementAt(index);
-            return null;
+            return list.FirstOrDefault(x => x.name.Equals(name));
         }
 
         public async Task WriteCardDataToAllFile(string data)

@@ -11,6 +11,7 @@ namespace charlie.bll.interfaces
         Task<Card> GetCardByName(string name);
         Task AddToCollection(IEnumerable<Card> newCards);
         Task<CardCollection> GetCollection();
+        Task<IEnumerable<Card>> OpenPack(string setName);
         void DeleteCollection();
     }
 }

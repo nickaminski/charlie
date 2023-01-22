@@ -10,6 +10,7 @@ namespace charlie.dal.interfaces
         Task<string> GetCardById(int id);
         Task<string> GetCardByName(string name);
         Task<string> GetAllCardSets();
-        Task DownloadImages(IEnumerable<CardImage> cardImages, string basePath);
+        IEnumerable<Task> DownloadImages(IEnumerable<CardImage> cardImages, string basePath);
+        Task DownloadImages(CardImage cardImage, string basePath);
     }
 }

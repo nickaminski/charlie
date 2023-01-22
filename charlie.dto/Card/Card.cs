@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace charlie.dto.Card
 {
@@ -19,29 +18,33 @@ namespace charlie.dto.Card
         public List<CardSetCard> card_sets { get; set; }
         public List<CardImage> card_images { get; set; }
         public List<CardPrice> card_prices { get; set; }
-    }
 
-    public class CardNameComparer : IComparer<Card>
-    {
-        public int Compare([AllowNull] Card x, [AllowNull] Card y)
+        public int getRarityValue(string setCode) 
         {
-            if (x == null && y == null) return 0;
-            if (x == null) return Int32.MinValue;
-            if (y == null) return Int32.MaxValue;
+            var cardSet = card_sets.Where(x => x.set_code.Split('-')[0] == setCode && isKnownRarity(x.set_rarity)).FirstOrDefault();
 
-            return x.name.CompareTo(y.name);
+            if (cardSet != null) {
+                switch(cardSet.set_rarity)
+                {
+                    case "Common" : return 0;
+                    case "Rare" : return 1;
+                    case "Super Rare" : return 2;
+                    case "Ultra Rare" : return 3;
+                    case "Secret Rare": return 4;
+                    default: return 0;
+                }
+            }
+            return 0;
+        }
+
+        public bool isKnownRarity(string set_rarity)
+        {
+            return set_rarity == "Common" ||
+                   set_rarity == "Rare" ||
+                   set_rarity == "Super Rare" ||
+                   set_rarity == "Ultra Rare" ||
+                   set_rarity == "Secret Rare";
         }
     }
 
-    public class CardIdComparer : IComparer<Card>
-    {
-        public int Compare([AllowNull] Card x, [AllowNull] Card y)
-        {
-            if (x == null && y == null) return 0;
-            if (x == null) return Int32.MinValue;
-            if (y == null) return Int32.MaxValue;
-
-            return x.id - y.id;
-        }
-    }
 }

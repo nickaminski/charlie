@@ -1,7 +1,11 @@
 ﻿using charlie.bll.interfaces;
+using charlie.common.models;
 using charlie.dto.Card;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace charlie.api.Controllers
@@ -10,17 +14,21 @@ namespace charlie.api.Controllers
     [Route("api/[controller]")]
     public class CardController : ControllerBase
     {
+        IConfiguration _configuration;
         ICardSetProvider _cardSetProv;
         ICardProvider _cardProv;
         IDeckProvider _deckProv;
         ILogWriter _logger;
+        ICachingService _cachingService;
                                                                                                                                                           
-        public CardController(ICardSetProvider cardSetProv, ICardProvider cardProv, IDeckProvider deckProv, ILogWriter logger)
+        public CardController(ICardSetProvider cardSetProv, ICardProvider cardProv, IDeckProvider deckProv, ILogWriter logger, ICachingService cachingService, IConfiguration configuration)
         {
             _cardSetProv = cardSetProv;
             _cardProv = cardProv;
             _deckProv = deckProv;
             _logger = logger;
+            _cachingService = cachingService;
+            _configuration = configuration;
         }
 
         [HttpGet("[action]")]
@@ -105,5 +113,44 @@ namespace charlie.api.Controllers
             return Ok(true);
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> StartDraft([FromQuery]string setName = "", [FromQuery] int numPacks = 5)
+        {
+            if (string.IsNullOrEmpty(setName)) return BadRequest("setName must be something");
+
+            var set = await _cardProv.GetAllCardsInSet(setName);
+            if (set.Count() == 0)
+                return BadRequest("no cards in set");
+
+            var draftKey = Guid.NewGuid();
+            var state = new DraftState() { draft_status = "in_progress", current_pack = 0, set_name = setName, num_packs = numPacks };
+            _cachingService.Set(draftKey.ToString(), state);
+
+            return Ok(draftKey);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> RollDraftPack([FromQuery]Guid draftKey)
+        {
+            var state = _cachingService.Get<DraftState>(draftKey.ToString());
+
+            if (state == null || !state.draft_status.Equals("in_progress"))
+                return BadRequest("no in progress draft to continue");
+
+            var cards = await _cardProv.OpenPack(state.set_name);
+
+            state.current_pack++;
+
+            if (state.current_pack > state.num_packs)
+            {
+                _cachingService.Remove(draftKey.ToString());
+            }
+            else
+            {
+                _cachingService.Set(draftKey.ToString(), state);
+            }
+
+            return Ok(cards);
+        }
     }
 }

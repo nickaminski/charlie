@@ -28,6 +28,7 @@ namespace charlie.api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHttpClient();
+            services.AddSingleton<ICachingService, CachingService>();
             services.AddSingleton<ILoggerFormatter, LoggerFormatter>();
             services.AddSingleton<ITimeProvider, TimeProvider>();
             services.AddSingleton<ILogWriter, TimedWriter>();
@@ -61,6 +62,8 @@ namespace charlie.api
             });
 
             services.AddSignalR();
+            services.AddDistributedMemoryCache();
+
             services.AddControllers().AddNewtonsoftJson();
 
             services.AddSwaggerGen(setupAction => {
@@ -109,14 +112,14 @@ namespace charlie.api
 
             var path = Path.Combine(Directory.GetCurrentDirectory(), Configuration["CardImagesPath"]);
             Directory.CreateDirectory(path);
-            app.UseFileServer(new FileServerOptions()
+
+            app.UseStaticFiles(new StaticFileOptions()
             {
                 FileProvider = new PhysicalFileProvider(path),
                 RequestPath = "/files"
             });
 
             app.UseRouting();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

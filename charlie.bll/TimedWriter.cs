@@ -40,7 +40,7 @@ namespace charlie.bll
 
         public async Task ConsumeLogs(CancellationToken stoppingToken)
         {
-            await Task.Delay(5000, stoppingToken).ConfigureAwait(false);
+            await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
             UseA = !UseA;
             if (!UseA)
             {
