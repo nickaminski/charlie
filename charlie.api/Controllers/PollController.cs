@@ -4,7 +4,6 @@ using charlie.dto;
 using charlie.dto.Poll;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace charlie.api.Controllers
@@ -33,41 +32,50 @@ namespace charlie.api.Controllers
         }
 
         [HttpPut("[action]")]
-        public async Task<PollViewModel> CreatePoll([FromBody]PollViewModel newPoll)
+        public async Task<IActionResult> CreatePoll([FromBody]PollViewModel newPoll)
         {
              _logger.ServerLogInfo("/Poll/CreatePoll");
             var pollId = await _pollProvider.CreatePoll(newPoll);
             newPoll.id = pollId;
-            return newPoll;
+            return Ok(newPoll);
         }
 
         [HttpGet("[action]")]
-        public async Task<IEnumerable<PollViewModel>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
             _logger.ServerLogInfo("/Poll/GetAll");
 
             var clientIp = GetClientIp();
-            return await _pollProvider.GetAll(clientIp);
+            var polls = await _pollProvider.GetAll(clientIp);
+            return Ok(polls);
         }
 
         [HttpGet("[action]")]
-        public async Task<PollViewModel> GetPoll([FromQuery]string id)
+        public async Task<IActionResult> GetPoll([FromQuery]string id)
         {
             _logger.ServerLogInfo("/Poll/GetPoll/?id=" + id);
             var clientIp = GetClientIp();
-            return await _pollProvider.GetPoll(id, clientIp);
+            var poll = await _pollProvider.GetPoll(id, clientIp);
+            if (poll == null)
+                return NotFound();
+
+            return Ok(poll);
         }
 
         [HttpGet("[action]")]
-        public async Task<PollResults> GetPollResults([FromQuery]string id)
+        public async Task<IActionResult> GetPollResults([FromQuery]string id)
         {
             _logger.ServerLogInfo("/Poll/GetPollResults/?id=" + id);
             var clientIp = GetClientIp();
-            return await _resultsProvider.GetPollResults(id, clientIp);
+            var results = await _resultsProvider.GetPollResults(id, clientIp);
+            if (results == null)
+                return NotFound();
+
+            return Ok(results);
         }
 
         [HttpPost("[action]")]
-        public async Task<bool> SubmitPollResponse([FromBody] SubmitPollResponse response)
+        public async Task<IActionResult> SubmitPollResponse([FromBody] SubmitPollResponse response)
         {
             _logger.ServerLogInfo("/Poll/SubmitPollResponse/?id=" + response.id + "&selectedChoice="+response.selectedChoice);
             var clientIp = GetClientIp();
@@ -80,12 +88,13 @@ namespace charlie.api.Controllers
                 var packet = new MessagePacket() { 
                     Username = System.Convert.ToBase64String(userName),
                     Message = response.selectedChoice, 
-                    Timestamp = _time.CurrentTimeStamp(), UserId = response.id 
+                    Timestamp = _time.CurrentTimeStamp(),
+                    UserId = response.id 
                 };
                 await _messageHub.Clients.Group(string.Format("Pollar-{0}", response.id)).SendAsync("broadcastToChannel", packet);
             }
 
-            return results;
+            return Ok(results);
         }
 
         private string GetClientIp()

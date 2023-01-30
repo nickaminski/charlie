@@ -8,6 +8,7 @@ namespace charlie.dal.interfaces
     {
         Task<UserProfile> SaveUser(UserProfile createUser);
         Task<UserProfile> GetUserProfileById(string id);
+        Task<UserProfile> GetUserProfileByName(string name);
         Task<bool> DeleteUser(string id);
         Task<IEnumerable<UserProfile>> GetUsers();
     }

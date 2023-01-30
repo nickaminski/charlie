@@ -32,69 +32,87 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IEnumerable<CardSet>> GetSets([FromQuery]string maxYear)
+        public async Task<IActionResult> GetSets([FromQuery]string maxYear)
         {
             _logger.ServerLogInfo("/Card/GetAllSets");
-            return await _cardSetProv.GetSets(maxYear);
+            var sets = await _cardSetProv.GetSets(maxYear);
+            return Ok(sets);
         }
 
         [HttpGet("[action]")]
-        public async Task<IEnumerable<Card>> GetAllCardsInSet([FromQuery]string setName = "")
+        public async Task<IActionResult> GetAllCardsInSet([FromQuery]string setName = "")
         {
             _logger.ServerLogInfo("/Card/GetAllCardsInSet");
             if (string.IsNullOrEmpty(setName))
-                return await Task.FromResult(new List<Card>());
+                return BadRequest();
 
-            return await _cardProv.GetAllCardsInSet(setName);
+            var cards = await _cardProv.GetAllCardsInSet(setName);
+            return Ok(cards);
         }
 
         [HttpGet("[action]")]
-        public async Task<Card> GetCardById([FromQuery]int id)
+        public async Task<IActionResult> GetCardById([FromQuery]int id)
         {
             _logger.ServerLogInfo("/Card/GetCardById");
-            return await _cardProv.GetCardById(id);
+            var card = await _cardProv.GetCardById(id);
+            if (card == null)
+                return NotFound();
+
+            return Ok(card);
         }
 
         [HttpGet("[action]")]
-        public async Task<Card> GetCardByName([FromQuery]string name)
+        public async Task<IActionResult> GetCardByName([FromQuery]string name)
         {
             _logger.ServerLogInfo("/Card/GetCardByName");
-            return await _cardProv.GetCardByName(name);
+            var card = await _cardProv.GetCardByName(name);
+            if (card == null)
+                return NotFound();
+
+            return Ok(card);
         }
 
         [HttpGet("[action]")]
-        public async Task<Deck> GetDeckById([FromQuery]string guid)
+        public async Task<IActionResult> GetDeckById([FromQuery]string guid)
         {
             _logger.ServerLogInfo("/Card/GetDeckById");
-            return await _deckProv.GetDeckById(guid);
+            var deck = await _deckProv.GetDeckById(guid);
+            if (deck == null)
+                return NotFound();
+
+            return Ok(deck);
         }
 
         [HttpPost("[action]")] 
-        public async Task<Deck> SaveDeck([FromBody]Deck deck)
+        public async Task<IActionResult> SaveDeck([FromBody]Deck deck)
         {
             _logger.ServerLogInfo("/Card/SaveDeck");
-            return await _deckProv.SaveDeck(deck);
+            var result = await _deckProv.SaveDeck(deck);
+            return Ok(result);
         }
 
         [HttpDelete("[action]")]
-        public async Task<bool> DeleteDeck([FromQuery]string guid)
+        public async Task<IActionResult> DeleteDeck([FromQuery]string guid)
         {
             _logger.ServerLogInfo("/Card/DeleteDeck");
-            return await _deckProv.DeleteDeck(guid);
+            var result = await _deckProv.DeleteDeck(guid);
+            return Ok(result);
         }
 
         [HttpGet("[action]")]
-        public async Task<IEnumerable<Deck>> GetDecks()
+        public async Task<IActionResult> GetDecks()
         {
             _logger.ServerLogInfo("/Card/GetDecks");
-            return await _deckProv.GetDecks();
+            var decks = await _deckProv.GetDecks();
+            return Ok(decks);
         }
 
         [HttpGet("[action]")]
-        public async Task<CardCollection> GetCollection()
+        public async Task<IActionResult> GetCollection()
         {
             _logger.ServerLogInfo("/Card/GetCollection");
-            return await _cardProv.GetCollection();
+            var collection = await _cardProv.GetCollection();
+            return Ok(collection);
         }
 
         [HttpDelete("[action]")]

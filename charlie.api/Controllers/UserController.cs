@@ -18,19 +18,28 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<UserProfile>> Get([FromQuery] string id = "")
+        public async Task<UserProfile> Get([FromQuery] string id = "", [FromQuery]string username = "")
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id) && string.IsNullOrEmpty(username))
             {
-                return BadRequest();
+                return null;
             }
             else
             {
-                var user = await _userProv.GetUserById(id);
-                if (user != null)
-                    return Ok(user);
+                if (!string.IsNullOrEmpty(id))
+                {
+                    var user = await _userProv.GetUserById(id);
+                    if (user != null)
+                        return user;
+                }
+                else if (!string.IsNullOrEmpty(username))
+                {
+                    var user = await _userProv.GetUserByName(username);
+                    if (user != null)
+                        return user;
+                }
 
-                return NotFound();
+                return null;
             }
         }
 
@@ -47,7 +56,8 @@ namespace charlie.api.Controllers
             {
                 return null;
             }
-            return await _userProv.CreateUser(createUser);
+            var result = await _userProv.CreateUser(createUser);
+            return result;
         }
 
         [HttpPatch]

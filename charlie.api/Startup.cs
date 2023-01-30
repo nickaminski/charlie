@@ -1,3 +1,4 @@
+using charlie.api.Filters;
 using charlie.api.Hubs;
 using charlie.bll;
 using charlie.bll.interfaces;
@@ -64,7 +65,10 @@ namespace charlie.api
             services.AddSignalR();
             services.AddDistributedMemoryCache();
 
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers(options =>
+            {
+                options.Filters.Add<HttpResponseExceptionFilter>();
+            }).AddNewtonsoftJson();
 
             services.AddSwaggerGen(setupAction => {
                 setupAction.SwaggerDoc(

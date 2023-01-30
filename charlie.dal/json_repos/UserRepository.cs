@@ -2,6 +2,7 @@
 using charlie.dto.User;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,44 +29,22 @@ namespace charlie.dal.json_repos
         {
             var existingUsers = (await GetUsers()).ToList();
 
-            if (existingUsers.Count == 0)
-            {
-                existingUsers.Add(createUser);
-            }
-            else
-            {
-                int index = -1;
-                index = existingUsers.FindIndex(x => x.UserId.CompareTo(createUser.UserId) > -1);
-                if (index == -1)
-                {
-                    existingUsers.Add(createUser);
-                }
-                else
-                {
-                    var replaceIndex = existingUsers.FindIndex(x => x.UserId.CompareTo(createUser.UserId) == 0);
-                    if (replaceIndex != -1)
-                    {
-                        existingUsers.RemoveAt(replaceIndex);
-                        existingUsers.Insert(replaceIndex, createUser);
-                    }
-                    else
-                    {
-                        existingUsers.Insert(index, createUser);
-                    }
-                }
-            }
+            existingUsers.Add(createUser);
+
             await File.WriteAllTextAsync(getUsersFilePath(), JsonConvert.SerializeObject(existingUsers));
             return createUser;
+        }
+
+        public async Task<UserProfile> GetUserProfileByName(string name)
+        {
+            var list = (await GetUsers()).ToList();
+            return list.FirstOrDefault(x => x.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task<UserProfile> GetUserProfileById(string id)
         {
             var list = (await GetUsers()).ToList();
-
-            var index = list.BinarySearch(new UserProfile() { UserId = id }, new UserComparer());
-            if (index >= 0)
-                return list.ElementAt(index);
-            return null;
+            return list.FirstOrDefault(x => x.UserId.Equals(id));
         }
 
         public async Task<bool> DeleteUser(string id)

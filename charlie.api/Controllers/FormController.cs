@@ -20,7 +20,7 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get([FromQuery]string id)
+        public async Task<IActionResult> Get([FromQuery]string id)
         {
             _logger.ServerLogInfo("api/Form/Get");
             if (string.IsNullOrEmpty(id))
@@ -36,18 +36,19 @@ namespace charlie.api.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<string>> Post([FromBody]FormModel data)
+        public async Task<IActionResult> Post([FromBody]FormModel data)
         {
             _logger.ServerLogInfo("api/Form/Post");
             var result = await _formProvider.CreateForm(data);
-            return string.Format("\"{0}\"", result);
+            return Ok(string.Format("\"{0}\"", result));
         }
 
         [HttpPut]
-        public async Task<bool> Put([FromBody]FormModel data)
+        public async Task<IActionResult> Put([FromBody]FormModel data)
         {
             _logger.ServerLogInfo("api/Form/Put");
-            return await _formProvider.UpdateForm(data);
+            var result = await _formProvider.UpdateForm(data);
+            return Ok(result);
         }
 
     }

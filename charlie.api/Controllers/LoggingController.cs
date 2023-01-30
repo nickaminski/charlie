@@ -16,7 +16,7 @@ namespace charlie.api.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody]LoggingMessage message)
+        public IActionResult Post([FromBody]LoggingMessage message)
         {
             message.ClientIp = HttpContext.Connection.RemoteIpAddress.ToString();
             _writer.AddMessage(message);

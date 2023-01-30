@@ -11,7 +11,7 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<bool> Get()
+        public IActionResult<bool> Get()
         {
             return Ok(true);
         }

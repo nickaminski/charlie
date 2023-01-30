@@ -1,4 +1,5 @@
 ﻿using charlie.bll.interfaces;
+using charlie.common.exceptions;
 using charlie.dal.interfaces;
 using charlie.dto.User;
 using System;
@@ -21,6 +22,12 @@ namespace charlie.bll.providers
         public async Task<UserProfile> CreateUser(CreateUser createUser)
         {
             _logger.ServerLogInfo("creating new user {0}", createUser.Username);
+
+            var user = await _userRepo.GetUserProfileByName(createUser.Username);
+
+            if (user != null)
+                throw new HttpResponseException(400, "User already exists");
+
             return await _userRepo.SaveUser(new UserProfile() { 
                 UserId = Guid.NewGuid().ToString(),
                 Username = createUser.Username,
@@ -39,8 +46,14 @@ namespace charlie.bll.providers
 
         public async Task<UserProfile> GetUserById(string id)
         {
-            _logger.ServerLogInfo("provider getting user {0}", id);
+            _logger.ServerLogInfo("provider getting user by id {0}", id);
             return await _userRepo.GetUserProfileById(id);
+        }
+
+        public async Task<UserProfile> GetUserByName(string name)
+        {
+            _logger.ServerLogInfo("provider getting user by name {0}", name);
+            return await _userRepo.GetUserProfileByName(name);
         }
 
         public async Task<IEnumerable<UserProfile>> GetUsers()
