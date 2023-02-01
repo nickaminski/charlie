@@ -18,11 +18,11 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet]
-        public async Task<UserProfile> Get([FromQuery] string id = "", [FromQuery]string username = "")
+        public async Task<IActionResult> Get([FromQuery] string id = "", [FromQuery]string username = "")
         {
             if (string.IsNullOrEmpty(id) && string.IsNullOrEmpty(username))
             {
-                return null;
+                return BadRequest();
             }
             else
             {
@@ -30,51 +30,69 @@ namespace charlie.api.Controllers
                 {
                     var user = await _userProv.GetUserById(id);
                     if (user != null)
-                        return user;
+                        return Ok(user);
                 }
                 else if (!string.IsNullOrEmpty(username))
                 {
                     var user = await _userProv.GetUserByName(username);
                     if (user != null)
-                        return user;
+                        return Ok(user);
                 }
 
-                return null;
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        [Route("[action]")]
+        public async Task<IActionResult> Signin([FromBody]SigninRequest signinRequest)
+        {
+            if (string.IsNullOrEmpty(signinRequest.username))
+            {
+                return BadRequest();
+            }
+            else
+            {
+                var user = await _userProv.GetUserByName(signinRequest.username);
+                if (user != null)
+                    return Ok(user);
+
+                return NotFound();
             }
         }
 
         [HttpGet("[action]")]
-        public async Task<IEnumerable<UserProfile>> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            return await _userProv.GetUsers();
+            return Ok(await _userProv.GetUsers());
         }
 
         [HttpPost]
-        public async Task<UserProfile> Create([FromBody] CreateUser createUser)
+        public async Task<IActionResult> Create([FromBody] CreateUser createUser)
         {
             if (createUser == null || string.IsNullOrEmpty(createUser.Username))
             {
-                return null;
+                return BadRequest();
             }
             var result = await _userProv.CreateUser(createUser);
-            return result;
+            return Ok(result);
         }
 
         [HttpPatch]
         [HttpPut]
-        public async Task<UserProfile> Update([FromBody] UpdateUser userProfile)
+        public async Task<IActionResult> Update([FromBody] UpdateUser userProfile)
         {
             if (userProfile == null || string.IsNullOrEmpty(userProfile.Username))
             {
-                return null;
+                return BadRequest();
             }
-            return await _userProv.SaveUser(userProfile);
+            return Ok(await _userProv.SaveUser(userProfile));
         }
 
         [HttpDelete]
-        public async Task<bool> Delete([FromQuery] string id)
+        public async Task<IActionResult> Delete([FromQuery] string id)
         {
-            return await _userProv.DeleteUser(id);
+            return Ok(await _userProv.DeleteUser(id));
         }
 
     }

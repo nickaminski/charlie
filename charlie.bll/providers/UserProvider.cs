@@ -76,6 +76,8 @@ namespace charlie.bll.providers
 
             if (!string.IsNullOrEmpty(user.Username)) currentUser.Username = user.Username;
 
+            if (user.Channels != null) currentUser.Channels = user.Channels;
+
             currentUser.UpdatedDate = DateTime.UtcNow;
             return await _userRepo.SaveUser(currentUser);
         }

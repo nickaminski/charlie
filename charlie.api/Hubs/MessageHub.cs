@@ -63,7 +63,7 @@ namespace charlie.api.Hubs
                     _logger.ServerLogInfo("client joining channel: {0}", channel);
                     var user = await _userProv.GetUserById(Context.Items["UserId"].ToString());
                     user.Channels.Add(channel);
-                    await _userProv.SaveUser(new UpdateUser() { Id = user.UserId });
+                    await _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels });
                     _logger.ServerLogInfo("{0} has joined {1}", GetUsername(), channel);
                 }
                 return true;
