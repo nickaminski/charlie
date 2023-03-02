@@ -127,8 +127,9 @@ namespace charlie.api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<MessageHub>("/chat");
+                endpoints.MapHub<MessageHub>("/message");
                 endpoints.MapHub<CasinoHub>("/casino");
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }

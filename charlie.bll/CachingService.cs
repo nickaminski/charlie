@@ -1,7 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

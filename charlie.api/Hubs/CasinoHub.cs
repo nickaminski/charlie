@@ -22,7 +22,7 @@ namespace charlie.api.Hubs
 
         public override async Task OnConnectedAsync()
         {
-            _logger.ServerLogInfo("signalR client connected");
+            _logger.ServerLogInfo("signalR casino client connected");
             await base.OnConnectedAsync();
         }
 
