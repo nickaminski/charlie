@@ -46,6 +46,7 @@ namespace charlie.api
             services.AddTransient<IPollResultsProvider, PollResultsProvider>();
             services.AddTransient<IFormProvider, FormProvider>();
             services.AddTransient<IUserProvider, UserProvider>();
+            services.AddTransient<IChatProvider, ChatProvider>();
 
             services.AddCors(options =>
             {

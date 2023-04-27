@@ -7,6 +7,6 @@ namespace charlie.dto.User
     {
         public string Id { get; set; }
         public string Username { get; set; }
-        public HashSet<string> Channels { get; set; }
+        public ICollection<string> Channels { get; set; }
     }
 }

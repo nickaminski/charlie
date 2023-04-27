@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 
 namespace charlie.api.Hubs
 {
@@ -13,12 +14,14 @@ namespace charlie.api.Hubs
         ILogWriter _logger;
         IUserProvider _userProv;
         ITimeProvider _time;
+        IChatProvider _chatProv;
 
-        public ChatHub(ILogWriter logger, IUserProvider userProv, ITimeProvider time)
+        public ChatHub(ILogWriter logger, IUserProvider userProv, ITimeProvider time, IChatProvider chatProv)
         {
             _logger = logger;
             _time = time;
             _userProv = userProv;
+            _chatProv = chatProv;
         }
 
         public override async Task OnConnectedAsync()
@@ -49,36 +52,45 @@ namespace charlie.api.Hubs
             return true;
         }
 
-        public async Task<bool> joinChannel(string channel)
+        public async Task<bool> joinChannel(string channelId)
         {
             try
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, channel);
+                await Groups.AddToGroupAsync(Context.ConnectionId, channelId);
 
-                _logger.ServerLogInfo("client joining channel: {0}", channel);
+                _logger.ServerLogInfo("client joining channel: {0}", channelId);
                 var user = await _userProv.GetUserById(Context.Items["UserId"].ToString());
-                user.Channels.Add(channel);
-                await _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels });
-                _logger.ServerLogInfo("{0} has joined {1}", GetUsername(), channel);
+                user.Channels.Add(channelId);
+                var tasks = new List<Task>() {
+                    _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels }),
+                    _chatProv.JoinChatRoom(channelId, user.UserId)
+                };
+                await Task.WhenAll(tasks);
+                _logger.ServerLogInfo("{0} has joined {1}", GetUsername(), channelId);
 
                 return true;
             }
             catch (Exception e) { _logger.ServerLogError(e.Message); return false; }
         }
 
-        public async Task<bool> leaveChannel(string channel)
+        public async Task<bool> leaveChannel(string channelId)
         {
             try
             {
-                if (!string.IsNullOrEmpty(channel) && Context.Items[channel].Equals(true.ToString()))
+                if (!string.IsNullOrEmpty(channelId) && Context.Items[channelId].Equals(true.ToString()))
                 {
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, channel);
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId);
 
                     var user = await _userProv.GetUserById(Context.Items["UserId"].ToString());
-                    user.Channels.Remove(channel);
-                    await _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels });
-                    var message = string.Format("{0} has left {1}", GetUsername(), channel);
-                    await SystemMessage(message, channel);
+                    user.Channels.Remove(channelId);
+                    var tasks = new List<Task>() {
+                        _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels }),
+                        _chatProv.LeaveChatRoom(channelId, user.UserId)
+                    };
+                    await Task.WhenAll(tasks);
+                    
+                    var message = string.Format("{0} has left", GetUsername(), channelId);
+                    await SystemMessage(message, channelId);
                     _logger.ServerLogInfo(message);
 
                     return true;
@@ -95,6 +107,7 @@ namespace charlie.api.Hubs
         {
             try
             {
+                var tasks = new List<Task>();
                 if (packet.Username != "System")
                 {
                     packet.Username = GetUsername();
@@ -105,8 +118,11 @@ namespace charlie.api.Hubs
                 var channelId = packet.ChannelId;
                 if (!string.IsNullOrEmpty(channelId))
                 {
-                    await Clients.Group(channelId).SendAsync("broadcastToChannel", packet);
-                    _logger.ServerLogInfo(packet.ToString());
+                    await Task.WhenAll(new List<Task>() 
+                    {
+                        _chatProv.SaveMessageToChatRoomChannel(packet),
+                        Clients.Group(channelId).SendAsync("broadcastToChannel", packet)
+                    });
                 }
             }
             catch (Exception e) { _logger.ServerLogError(e.Message); }

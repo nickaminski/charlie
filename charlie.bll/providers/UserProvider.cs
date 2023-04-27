@@ -4,6 +4,7 @@ using charlie.dal.interfaces;
 using charlie.dto.User;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace charlie.bll.providers
@@ -12,11 +13,13 @@ namespace charlie.bll.providers
     {
         private IUserRepository _userRepo;
         private ILogWriter _logger;
+        private IChatProvider _chatProv;
 
-        public UserProvider(IUserRepository userRepo, ILogWriter logger)
+        public UserProvider(IUserRepository userRepo, ILogWriter logger, IChatProvider chatProv)
         {
             _userRepo = userRepo;
             _logger = logger;
+            _chatProv = chatProv;
         }
 
         public async Task<UserProfile> CreateUser(CreateUser createUser)
@@ -28,19 +31,31 @@ namespace charlie.bll.providers
             if (user != null)
                 throw new HttpResponseException(400, "User already exists");
 
-            return await _userRepo.SaveUser(new UserProfile() { 
+            var chatRoomsMeta = (await _chatProv.GetAllMetaData()).ToList();
+            var idx = chatRoomsMeta.ToList().FindIndex(x => x.OwnerUserId == "system" && x.Name == "Public");
+
+            var newUser = new UserProfile()
+            {
                 UserId = Guid.NewGuid().ToString(),
                 Username = createUser.Username,
-                Channels = new HashSet<string> { "public" },
+                Channels = new HashSet<string> { chatRoomsMeta[idx].Id.Value.ToString() },
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow,
                 DateLastLoggedIn = DateTime.UtcNow
-            });
+            };
+
+            await _chatProv.JoinChatRoom(chatRoomsMeta[idx].Id.Value.ToString(), newUser.UserId);
+            return await _userRepo.SaveUser(newUser);
         }
 
         public async Task<bool> DeleteUser(string id)
         {
             _logger.ServerLogInfo("deleting user {0}", id);
+            var user = await _userRepo.GetUserProfileById(id);
+            if (user == null) return false;
+
+            await _chatProv.LeaveChatRooms(user.Channels, id);
+
             return await _userRepo.DeleteUser(id);
         }
 

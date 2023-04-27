@@ -82,9 +82,9 @@ namespace charlie.bll.providers
 
             try
             {
-                // await DownLoadSetImages(cardSets, path);
+                await DownLoadSetImages(cardSets, path);
             }
-            catch (Exception e)
+            catch (Exception)
             { }
 
             await _cardSetRepo.WriteCardSetData(cardSetData);

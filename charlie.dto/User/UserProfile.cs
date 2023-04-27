@@ -7,7 +7,7 @@ namespace charlie.dto.User
     {
         public string UserId { get; set; }
         public string Username { get; set; }
-        public HashSet<string> Channels { get; set; }
+        public ICollection<string> Channels { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
         public DateTime DateLastLoggedIn { get; set; }

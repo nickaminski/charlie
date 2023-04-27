@@ -1,7 +1,6 @@
 ﻿using charlie.bll.interfaces;
 using charlie.dto.User;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace charlie.api.Controllers

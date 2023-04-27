@@ -11,8 +11,8 @@ namespace charlie.bll.interfaces
         public void ServerLogInfo(string message);
         public void ServerLogWarning(string message);
         public void ServerLogError(string message);
-        public void ServerLogInfo(string format, params object?[] args);
-        public void ServerLogWarning(string format, params object?[] args);
-        public void ServerLogError(string format, params object?[] args);
+        public void ServerLogInfo(string format, params object[] args);
+        public void ServerLogWarning(string format, params object[] args);
+        public void ServerLogError(string format, params object[] args);
     }
 }

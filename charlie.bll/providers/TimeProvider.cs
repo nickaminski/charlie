@@ -12,7 +12,7 @@ namespace charlie.bll.providers
 
         public long CurrentTimeStamp()
         {
-            return (long)((DateTime.Now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds + 0.5);
+            return (long)((CurrentDateTime() - new DateTime(1970, 1, 1)).TotalMilliseconds + 0.5);
         }
 
     }

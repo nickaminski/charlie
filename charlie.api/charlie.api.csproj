@@ -22,7 +22,6 @@
     <Folder Include="Logs\" />
     <Folder Include="Res\Forms\" />
     <Folder Include="Res\Polls\" />
-    <Folder Include="Res\Users\" />
     <Folder Include="Res\YGO\CardSets\" />
     <Folder Include="Res\YGO\Cards\" />
     <Folder Include="Res\YGO\Images\" />

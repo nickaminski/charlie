@@ -15,6 +15,7 @@ namespace charlie.bll
             services.AddTransient<IPollRepository, PollRepository>();
             services.AddTransient<IFormRepository, FormRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IChatRepository, ChatRepository>();
 
             return services;
         }
