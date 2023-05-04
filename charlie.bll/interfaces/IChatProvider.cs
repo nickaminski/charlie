@@ -12,7 +12,7 @@ namespace charlie.bll.interfaces
         public Task<bool> JoinChatRoom(string chatRoomId, string userId);
         public Task<bool> LeaveChatRoom(string chatRoomId, string userId);
         public Task<bool> LeaveChatRooms(IEnumerable<string> chatRoomIds, string userId);
-        public Task<IEnumerable<ChatRoomMetaData>> GetAllMetaData();
+        public Task<IEnumerable<ChatRoomMetaData>> GetAllMetadata();
         public Task<bool> WriteMetadata(IEnumerable<ChatRoomMetaData> data);
         public Task<IEnumerable<MessagePacket>> GetChatRoomChannelHistory(string channelId);
         public Task<bool> SaveMessageToChatRoomChannel(MessagePacket message);

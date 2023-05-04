@@ -31,20 +31,20 @@ namespace charlie.bll.providers
             if (user != null)
                 throw new HttpResponseException(400, "User already exists");
 
-            var chatRoomsMeta = (await _chatProv.GetAllMetaData()).ToList();
-            var idx = chatRoomsMeta.ToList().FindIndex(x => x.OwnerUserId == "system" && x.Name == "Public");
+            var chatRoomsMeta = (await _chatProv.GetAllMetadata()).ToList();
+            var id = chatRoomsMeta.FirstOrDefault(x => x.OwnerUserId == "system" && x.Name == "Public").Id.Value.ToString();
 
             var newUser = new UserProfile()
             {
                 UserId = Guid.NewGuid().ToString(),
                 Username = createUser.Username,
-                Channels = new HashSet<string> { chatRoomsMeta[idx].Id.Value.ToString() },
+                Channels = new HashSet<string> { id },
                 CreatedDate = DateTime.UtcNow,
                 UpdatedDate = DateTime.UtcNow,
                 DateLastLoggedIn = DateTime.UtcNow
             };
 
-            await _chatProv.JoinChatRoom(chatRoomsMeta[idx].Id.Value.ToString(), newUser.UserId);
+            await _chatProv.JoinChatRoom(id, newUser.UserId);
             return await _userRepo.SaveUser(newUser);
         }
 

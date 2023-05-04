@@ -21,7 +21,7 @@ namespace charlie.api.Controllers
         public async Task<IActionResult> GetChatRoomList()
         {
             _logger.ServerLogInfo("/Chat/GetChatRoomList");
-            return Ok(await _chatProvider.GetAllMetaData());
+            return Ok(await _chatProvider.GetAllMetadata());
         }
 
         [HttpGet("[action]")]

@@ -56,17 +56,11 @@ namespace charlie.api.Hubs
         {
             try
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, channelId);
-
                 _logger.ServerLogInfo("client joining channel: {0}", channelId);
-                var user = await _userProv.GetUserById(Context.Items["UserId"].ToString());
-                user.Channels.Add(channelId);
-                var tasks = new List<Task>() {
-                    _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels }),
-                    _chatProv.JoinChatRoom(channelId, user.UserId)
-                };
-                await Task.WhenAll(tasks);
-                _logger.ServerLogInfo("{0} has joined {1}", GetUsername(), channelId);
+                await Task.WhenAll(
+                    Groups.AddToGroupAsync(Context.ConnectionId, channelId),
+                    _chatProv.JoinChatRoom(channelId, Context.Items["UserId"].ToString())
+                );
 
                 return true;
             }
@@ -77,17 +71,13 @@ namespace charlie.api.Hubs
         {
             try
             {
+                _logger.ServerLogInfo("client leaving channel: {0}", channelId);
                 if (!string.IsNullOrEmpty(channelId) && Context.Items[channelId].Equals(true.ToString()))
                 {
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId);
-
-                    var user = await _userProv.GetUserById(Context.Items["UserId"].ToString());
-                    user.Channels.Remove(channelId);
-                    var tasks = new List<Task>() {
-                        _userProv.SaveUser(new UpdateUser() { Id = user.UserId, Channels = user.Channels }),
-                        _chatProv.LeaveChatRoom(channelId, user.UserId)
-                    };
-                    await Task.WhenAll(tasks);
+                    await Task.WhenAll(
+                        Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId),
+                        _chatProv.LeaveChatRoom(channelId, Context.Items["UserId"].ToString())
+                    );
                     
                     var message = string.Format("{0} has left", GetUsername(), channelId);
                     await SystemMessage(message, channelId);
@@ -118,11 +108,10 @@ namespace charlie.api.Hubs
                 var channelId = packet.ChannelId;
                 if (!string.IsNullOrEmpty(channelId))
                 {
-                    await Task.WhenAll(new List<Task>() 
-                    {
+                    await Task.WhenAll(
                         _chatProv.SaveMessageToChatRoomChannel(packet),
                         Clients.Group(channelId).SendAsync("broadcastToChannel", packet)
-                    });
+                    );
                 }
             }
             catch (Exception e) { _logger.ServerLogError(e.Message); }
