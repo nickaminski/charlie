@@ -41,8 +41,9 @@ namespace charlie.dal.json_repos
 
         public async Task<string> GetAllCardsInSet(string setName)
         {
+            // https://db.ygoprodeck.com/api/v7/cardinfo.php?cardset=Legendary%20Duelists%3A%20Duels%20From%20the%20Deep
             var client = _clientFactory.CreateClient();
-            var url = string.Format("{0}?set={1}", cardUrl, setName);
+            var url = string.Format("{0}?cardset={1}", cardUrl, setName);
             var results = await client.GetAsync(url, _cancellationTokenSource.Token);
 
             if (results.IsSuccessStatusCode)
