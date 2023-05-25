@@ -73,18 +73,16 @@ namespace charlie.bll.providers
 
         public async Task<bool> LeaveChatRooms(IEnumerable<string> chatRoomIds, string userId)
         {
+            var user = await _userRepo.GetUserProfileById(userId);
             foreach (var item in chatRoomIds)
             {
                 var chatRoom = await _chatRepo.GetChatRoom(item);
                 chatRoom.MetaData.UserIds.Remove(userId);
+                user.Channels.Remove(item);
                 await _chatRepo.SaveChatRoom(chatRoom);
             }
+            await _userRepo.SaveUser(user);
             return true;
-        }
-
-        public async Task<bool> WriteMetadata(IEnumerable<ChatRoomMetaData> data)
-        {
-            return await _chatRepo.WriteMetadata(data);
         }
 
         public async Task<bool> SaveMessageToChatRoomChannel(MessagePacket message)

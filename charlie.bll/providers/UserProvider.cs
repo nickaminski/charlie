@@ -13,13 +13,13 @@ namespace charlie.bll.providers
     {
         private IUserRepository _userRepo;
         private ILogWriter _logger;
-        private IChatProvider _chatProv;
+        private IChatRepository _chatRepo;
 
-        public UserProvider(IUserRepository userRepo, ILogWriter logger, IChatProvider chatProv)
+        public UserProvider(IUserRepository userRepo, ILogWriter logger, IChatRepository chatRepo)
         {
             _userRepo = userRepo;
             _logger = logger;
-            _chatProv = chatProv;
+            _chatRepo = chatRepo;
         }
 
         public async Task<UserProfile> CreateUser(CreateUser createUser)
@@ -31,7 +31,7 @@ namespace charlie.bll.providers
             if (user != null)
                 throw new HttpResponseException(400, "User already exists");
 
-            var chatRoomsMeta = (await _chatProv.GetAllMetadata()).ToList();
+            var chatRoomsMeta = (await _chatRepo.GetAllMetadata()).ToList();
             var id = chatRoomsMeta.FirstOrDefault(x => x.OwnerUserId == "system" && x.Name == "Public").Id.Value.ToString();
 
             var newUser = new UserProfile()
@@ -43,9 +43,15 @@ namespace charlie.bll.providers
                 UpdatedDate = DateTime.UtcNow,
                 DateLastLoggedIn = DateTime.UtcNow
             };
+            var chatRoom = await _chatRepo.GetChatRoom(id);
+            chatRoom.MetaData.UserIds.Add(user.UserId);
 
-            await _chatProv.JoinChatRoom(id, newUser.UserId);
-            return await _userRepo.SaveUser(newUser);
+            await Task.WhenAll(
+                    _chatRepo.SaveChatRoom(chatRoom),
+                    _userRepo.SaveUser(newUser)
+                  );
+
+            return newUser;
         }
 
         public async Task<bool> DeleteUser(string id)
@@ -53,8 +59,12 @@ namespace charlie.bll.providers
             _logger.ServerLogInfo("deleting user {0}", id);
             var user = await _userRepo.GetUserProfileById(id);
             if (user == null) return false;
-
-            await _chatProv.LeaveChatRooms(user.Channels, id);
+            foreach (var item in user.Channels)
+            {
+                var chatRoom = await _chatRepo.GetChatRoom(item);
+                chatRoom.MetaData.UserIds.Remove(id);
+                await _chatRepo.SaveChatRoom(chatRoom);
+            }
 
             return await _userRepo.DeleteUser(id);
         }

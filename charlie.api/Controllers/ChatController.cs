@@ -11,7 +11,8 @@ namespace charlie.api.Controllers
         private ILogWriter _logger;
         private IChatProvider _chatProvider;
 
-        public ChatController(ILogWriter logger, IChatProvider chatProvider)
+        public ChatController(ILogWriter logger, 
+                              IChatProvider chatProvider)
         {
             _logger = logger;
             _chatProvider = chatProvider;

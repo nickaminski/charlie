@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace charlie.api.Controllers
@@ -21,7 +22,12 @@ namespace charlie.api.Controllers
         ILogWriter _logger;
         ICachingService _cachingService;
                                                                                                                                                           
-        public CardController(ICardSetProvider cardSetProv, ICardProvider cardProv, IDeckProvider deckProv, ILogWriter logger, ICachingService cachingService, IConfiguration configuration)
+        public CardController(ICardSetProvider cardSetProv, 
+                              ICardProvider cardProv, 
+                              IDeckProvider deckProv, 
+                              ILogWriter logger, 
+                              ICachingService cachingService, 
+                              IConfiguration configuration)
         {
             _cardSetProv = cardSetProv;
             _cardProv = cardProv;

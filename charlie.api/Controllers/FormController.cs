@@ -13,7 +13,8 @@ namespace charlie.api.Controllers
         ILogWriter _logger;
         IFormProvider _formProvider;
 
-        public FormController(ILogWriter logger, IFormProvider formProvider)
+        public FormController(ILogWriter logger, 
+                              IFormProvider formProvider)
         {
             _logger = logger;
             _formProvider = formProvider;
