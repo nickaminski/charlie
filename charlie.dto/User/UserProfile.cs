@@ -5,7 +5,7 @@ namespace charlie.dto.User
 {
     public class UserProfile
     {
-        public string UserId { get; set; }
+        public Guid UserId { get; set; }
         public string Username { get; set; }
         public ICollection<string> Channels { get; set; }
         public DateTime CreatedDate { get; set; }

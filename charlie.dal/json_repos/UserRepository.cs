@@ -1,4 +1,5 @@
 ﻿using charlie.dal.interfaces;
+using charlie.dto.Card;
 using charlie.dto.User;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -25,14 +26,38 @@ namespace charlie.dal.json_repos
                 File.Create(getUsersFilePath()).Close();
         }
 
-        public async Task<UserProfile> SaveUser(UserProfile createUser)
+        public async Task<UserProfile> SaveUser(UserProfile userData)
         {
-            var existingUsers = (await GetUsers()).ToList();
+            var list = (await GetUsers()).ToList();
 
-            existingUsers.Add(createUser);
-
-            await File.WriteAllTextAsync(getUsersFilePath(), JsonConvert.SerializeObject(existingUsers));
-            return createUser;
+            if (list.Count == 0)
+            {
+                list.Add(userData);
+            }
+            else
+            {
+                int index = -1;
+                index = list.FindIndex(x => x.UserId.CompareTo(userData.UserId) > -1);
+                if (index == -1)
+                {
+                    list.Add(userData);
+                }
+                else
+                {
+                    var replaceIndex = list.FindIndex(x => x.UserId.CompareTo(userData.UserId) == 0);
+                    if (replaceIndex != -1)
+                    {
+                        list.RemoveAt(replaceIndex);
+                        list.Insert(replaceIndex, userData);
+                    }
+                    else
+                    {
+                        list.Insert(index, userData);
+                    }
+                }
+            }
+            await File.WriteAllTextAsync(getUsersFilePath(), JsonConvert.SerializeObject(list));
+            return userData;
         }
 
         public async Task<UserProfile> GetUserProfileByName(string name)

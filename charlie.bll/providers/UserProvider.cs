@@ -37,7 +37,7 @@ namespace charlie.bll.providers
 
             var newUser = new UserProfile()
             {
-                UserId = Guid.NewGuid().ToString(),
+                UserId = Guid.NewGuid(),
                 Username = createUser.Username,
                 Channels = new HashSet<string> { id },
                 CreatedDate = DateTime.UtcNow,
@@ -45,7 +45,7 @@ namespace charlie.bll.providers
                 DateLastLoggedIn = DateTime.UtcNow
             };
             var chatRoom = await _chatRepo.GetChatRoom(id);
-            chatRoom.MetaData.UserIds.Add(newUser.UserId);
+            chatRoom.MetaData.UserIds.Add(newUser.UserId.ToString());
 
             await Task.WhenAll(
                     _chatRepo.SaveChatRoom(chatRoom),
