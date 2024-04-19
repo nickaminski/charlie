@@ -11,6 +11,7 @@ namespace charlie.bll.interfaces
         Task<UserProfile> SaveUser(UpdateUser updateUser);
         Task<bool> DeleteUser(string id);
         Task<UserProfile> GetUserByName(string name);
+        Task<UserProfile> SignIn(SigninRequest request);
         Task<IEnumerable<UserProfile>> GetUsers();
     }
 }

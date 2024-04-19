@@ -52,7 +52,7 @@ namespace charlie.api.Controllers
             }
             else
             {
-                var user = await _userProv.GetUserByName(signinRequest.username);
+                var user = await _userProv.SignIn(signinRequest);
                 if (user != null)
                     return Ok(user);
 

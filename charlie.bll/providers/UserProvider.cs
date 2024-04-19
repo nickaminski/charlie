@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace charlie.bll.providers
 {
@@ -105,6 +106,16 @@ namespace charlie.bll.providers
 
             currentUser.UpdatedDate = DateTime.UtcNow;
             return await _userRepo.SaveUser(currentUser);
+        }
+
+        public async Task<UserProfile> SignIn(SigninRequest request)
+        {
+            _logger.ServerLogInfo("signing in {0}", request.username);
+            var user = await _userRepo.GetUserProfileByName(request.username);
+            if (user == null) throw new HttpResponseException(404, "user not found");
+            user.DateLastLoggedIn = DateTime.Now;
+            await _userRepo.SaveUser(user);
+            return user;
         }
     }
 }
