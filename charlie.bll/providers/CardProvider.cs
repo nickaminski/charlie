@@ -1,4 +1,5 @@
 ﻿using charlie.bll.interfaces;
+using charlie.common.exceptions;
 using charlie.dal.interfaces;
 using charlie.dto.Card;
 using Microsoft.Extensions.Configuration;
@@ -46,6 +47,9 @@ namespace charlie.bll.providers
 
         public async Task<IEnumerable<Card>> GetAllCardsInSet(string setName)
         {
+            if (string.IsNullOrEmpty(setName))
+                throw new HttpResponseException(400, "setName cannot be empty.");
+
             var results = await _cardRepo.GetAllCardsInSet(setName);
 
             if (results == null || results.Count() == 0)
@@ -112,6 +116,9 @@ namespace charlie.bll.providers
 
         public async Task<Card> GetCardByName(string name)
         {
+            if (string.IsNullOrEmpty(name))
+                throw new HttpResponseException(400, "name cannot be empty.");
+
             var results = await _cardRepo.GetByName(name);
 
             if (results == null)

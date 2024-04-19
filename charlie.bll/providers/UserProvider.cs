@@ -44,7 +44,7 @@ namespace charlie.bll.providers
                 DateLastLoggedIn = DateTime.UtcNow
             };
             var chatRoom = await _chatRepo.GetChatRoom(id);
-            chatRoom.MetaData.UserIds.Add(user.UserId);
+            chatRoom.MetaData.UserIds.Add(newUser.UserId);
 
             await Task.WhenAll(
                     _chatRepo.SaveChatRoom(chatRoom),

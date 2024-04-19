@@ -31,7 +31,7 @@ namespace charlie.api
             services.AddHttpClient();
             services.AddSingleton<ICachingService, CachingService>();
             services.AddSingleton<ILoggerFormatter, LoggerFormatter>();
-            services.AddSingleton<ITimeProvider, TimeProvider>();
+            services.AddSingleton<ITimeProvider, bll.providers.TimeProvider>();
             services.AddSingleton<ILogWriter, TimedWriter>();
             services.AddSingleton<IRandomNumberProvider, RandomNumberProvider>();
 
