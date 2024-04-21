@@ -1,4 +1,5 @@
-﻿using charlie.dal.interfaces;
+﻿using charlie.dal;
+using charlie.dal.interfaces;
 using charlie.dal.json_repos;
 using Microsoft.Extensions.DependencyInjection;
 

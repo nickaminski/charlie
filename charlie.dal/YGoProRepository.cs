@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace charlie.dal.json_repos
+namespace charlie.dal
 {
     public class YGoProRepository : IYGoProRepository
     {
