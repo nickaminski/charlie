@@ -6,10 +6,10 @@ namespace charlie.dal.interfaces
 {
     public interface IPollRepository
     {
-        Task<string> CreatePoll(Poll poll);
-        Task<IEnumerable<Poll>> GetAll();
-        Task<Poll> GetPoll(string id);
-        Task<PollResults> GetPollResults(string id, string ipAddress);
-        Task<bool> SavePoll(Poll poll);
+        Task<string> CreatePollAsync(Poll poll);
+        Task<IEnumerable<Poll>> GetAllAsync();
+        Task<Poll> GetPollAsync(string id);
+        Task<PollResults> GetPollResultsAsync(string id, string ipAddress);
+        Task<bool> SavePollAsync(Poll poll);
     }
 }

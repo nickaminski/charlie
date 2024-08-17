@@ -20,7 +20,7 @@ namespace charlie.dal.json_repos
                 Directory.CreateDirectory(_path);
         }
 
-        public async Task<FormModel> SaveForm(FormModel form)
+        public async Task<FormModel> SaveFormAsync(FormModel form)
         {
             if (string.IsNullOrWhiteSpace(form.formId))
             {
@@ -31,7 +31,7 @@ namespace charlie.dal.json_repos
             return form;
         }
 
-        public async Task<FormModel> GetForm(string id)
+        public async Task<FormModel> GetFormAsync(string id)
         {
             var path = getFormFilePath(id);
             if (File.Exists(path))
@@ -43,7 +43,7 @@ namespace charlie.dal.json_repos
             return null;
         }
 
-        public async Task<IEnumerable<FormModel>> GetAll()
+        public async Task<IEnumerable<FormModel>> GetAllAsync()
         {
             List<FormModel> forms = new List<FormModel>();
             var filePaths = Directory.GetFiles(_path);

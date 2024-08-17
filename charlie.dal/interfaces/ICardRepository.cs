@@ -6,13 +6,13 @@ namespace charlie.dal.interfaces
 {
     public interface ICardRepository
     {
-        Task<IEnumerable<Card>> GetAllCardsInSet(string setName);
-        Task WriteCardDataToSetFile(string data, string setName);
-        Task<Card> GetById(int id);
-        Task<Card> GetByName(string name);
-        Task WriteCardDataToAllFile(string data);
-        Task<CardCollection> GetCollection();
-        Task AddToCollection(IEnumerable<Card> newCards);
+        Task<IEnumerable<Card>> GetAllCardsInSetAsync(string setName);
+        Task WriteCardDataToSetFileAsync(string data, string setName);
+        Task<Card> GetByIdAsync(int id);
+        Task<Card> GetByNameAsync(string name);
+        Task WriteCardDataToAllFileAsync(string data);
+        Task<CardCollection> GetCollectionAsync();
+        Task AddToCollectionAsync(IEnumerable<Card> newCards);
         void DeleteCollection();
     }
 }

@@ -17,15 +17,15 @@ namespace charlie.bll
             _cache = cache;
         }
 
-        public async Task<T> GetAsync<T>(string key, CancellationToken cancellationToken = default)
+        public async Task<T> GetAsync<T>(string key, CancellationToken token = default)
         {
-            var value = await GetStringAsync(key, cancellationToken);
+            var value = await GetStringAsync(key, token);
             return JsonConvert.DeserializeObject<T>(value);
         }
 
-        public Task<string> GetStringAsync(string key, CancellationToken cancellationToken = default(CancellationToken))
+        public Task<string> GetStringAsync(string key, CancellationToken token = default)
         {
-            return _cache.GetStringAsync(key, cancellationToken);
+            return _cache.GetStringAsync(key, token);
         }
 
         public Task SetAsync<T>(string key, T value, DistributedCacheEntryOptions options, CancellationToken token = default)
@@ -39,12 +39,12 @@ namespace charlie.bll
             return SetAsync<T>(key, value, _defaultOptions, token);
         }
 
-        public Task SetStringAsync(string key, string value, DistributedCacheEntryOptions options, CancellationToken token = default(CancellationToken))
+        public Task SetStringAsync(string key, string value, DistributedCacheEntryOptions options, CancellationToken token = default)
         {
             return SetStringAsync(key, value, options, token);
         }
 
-        public Task SetStringAsync(string key, string value, CancellationToken token = default(CancellationToken))
+        public Task SetStringAsync(string key, string value, CancellationToken token = default)
         {
             return _cache.SetStringAsync(key, value, _defaultOptions, token);
         }

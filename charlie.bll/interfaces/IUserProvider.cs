@@ -6,7 +6,7 @@ namespace charlie.bll.interfaces
 {
     public interface IUserProvider : IProvider<UserProfile>
     {
-        Task<UserProfile> GetUserById(string id);
+        Task<UserProfile> GetUserByIdAsync(string id);
         Task<UserProfile> CreateUser(CreateUser createUser);
         Task<UserProfile> SaveUser(UpdateUser updateUser);
         Task<bool> DeleteUser(string id);

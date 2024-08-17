@@ -26,9 +26,9 @@ namespace charlie.dal.json_repos
                 File.Create(getUsersFilePath()).Close();
         }
 
-        public async Task<UserProfile> SaveUser(UserProfile userData)
+        public async Task<UserProfile> SaveUserAsync(UserProfile userData)
         {
-            var list = (await GetUsers()).ToList();
+            var list = (await GetUsersAsync()).ToList();
 
             if (list.Count == 0)
             {
@@ -60,21 +60,21 @@ namespace charlie.dal.json_repos
             return userData;
         }
 
-        public async Task<UserProfile> GetUserProfileByName(string name)
+        public async Task<UserProfile> GetUserProfileByNameAsync(string name)
         {
-            var list = (await GetUsers()).ToList();
+            var list = (await GetUsersAsync()).ToList();
             return list.FirstOrDefault(x => x.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public async Task<UserProfile> GetUserProfileById(string id)
+        public async Task<UserProfile> GetUserProfileByIdAsync(string id)
         {
-            var list = (await GetUsers()).ToList();
+            var list = (await GetUsersAsync()).ToList();
             return list.FirstOrDefault(x => x.UserId.Equals(id));
         }
 
-        public async Task<bool> DeleteUser(string id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
-            var list = (await GetUsers()).ToList();
+            var list = (await GetUsersAsync()).ToList();
 
             int index = -1;
             index = list.FindIndex(x => x.UserId.CompareTo(id) == 0);
@@ -91,7 +91,7 @@ namespace charlie.dal.json_repos
             return true;
         }
 
-        public async Task<IEnumerable<UserProfile>> GetUsers()
+        public async Task<IEnumerable<UserProfile>> GetUsersAsync()
         {
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);

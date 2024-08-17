@@ -22,7 +22,7 @@ namespace charlie.bll.providers
             if (Guid.TryParse(id, out var guid))
             {
                 
-                return await _repo.DeleteDeck(guid);
+                return await _repo.DeleteDeckAsync(guid);
             }
             return false;
         }
@@ -31,7 +31,7 @@ namespace charlie.bll.providers
         {
             if (Guid.TryParse(id, out var guid))
             {
-                return await _repo.GetDeckById(guid);
+                return await _repo.GetDeckByIdAsync(guid);
             }
 
             return null;
@@ -39,12 +39,12 @@ namespace charlie.bll.providers
 
         public async Task<Deck> SaveDeck(Deck deck)
         {
-            return await _repo.SaveDeck(deck);
+            return await _repo.SaveDeckAsync(deck);
         }
 
         public async Task<IEnumerable<Deck>> GetDecks()
         {
-            var decks = await _repo.GetDecks();
+            var decks = await _repo.GetDecksAsync();
             foreach (var item in decks)
             {
                 item.cards.Clear();

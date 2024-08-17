@@ -10,11 +10,13 @@ namespace charlie.dto.Card
         public string type { get; set; }
         public string desc { get; set; }
         public int atk { get; set; }
-        public int def { get; set; }
-        public int level { get; set; }
+        public int? def { get; set; }
+        public int? level { get; set; }
         public string race { get; set; }
         public string attribute { get; set; }
         public string archetype { get; set; }
+        public int? linkval { get; set; }
+        public IEnumerable<string> linkmarkers { get; set; }
         public List<CardSetCard> card_sets { get; set; }
         public List<CardImage> card_images { get; set; }
         public List<CardPrice> card_prices { get; set; }

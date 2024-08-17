@@ -6,10 +6,10 @@ namespace charlie.dal.interfaces
 {
     public interface IUserRepository
     {
-        Task<UserProfile> SaveUser(UserProfile createUser);
-        Task<UserProfile> GetUserProfileById(string id);
-        Task<UserProfile> GetUserProfileByName(string name);
-        Task<bool> DeleteUser(string id);
-        Task<IEnumerable<UserProfile>> GetUsers();
+        Task<UserProfile> SaveUserAsync(UserProfile createUser);
+        Task<UserProfile> GetUserProfileByIdAsync(string id);
+        Task<UserProfile> GetUserProfileByNameAsync(string name);
+        Task<bool> DeleteUserAsync(string id);
+        Task<IEnumerable<UserProfile>> GetUsersAsync();
     }
 }

@@ -28,7 +28,7 @@ namespace charlie.dal
             _cancellationTokenSource.CancelAfter(30000);
         }
 
-        public async Task<string> GetAllCardSets()
+        public async Task<string> GetAllCardSetsAsync()
         {
             var client = _clientFactory.CreateClient();
             var results = await client.GetAsync(cardSetUrl, _cancellationTokenSource.Token);
@@ -39,7 +39,7 @@ namespace charlie.dal
             return string.Empty;
         }
 
-        public async Task<string> GetAllCardsInSet(string setName)
+        public async Task<string> GetAllCardsInSetAsync(string setName)
         {
             var client = _clientFactory.CreateClient();
             var url = string.Format("{0}?cardset={1}", cardUrl, setName);
@@ -51,7 +51,7 @@ namespace charlie.dal
             return string.Empty;
         }
 
-        public async Task<string> GetCardById(int id)
+        public async Task<string> GetCardByIdAsync(int id)
         {
             var client = _clientFactory.CreateClient();
             var url = string.Format("{0}?id={1}", cardUrl, id);
@@ -65,7 +65,7 @@ namespace charlie.dal
             return string.Empty;
         }
 
-        public async Task<string> GetCardByName(string name)
+        public async Task<string> GetCardByNameAsync(string name)
         {
             var client = _clientFactory.CreateClient();
             var url = string.Format("{0}?name={1}", cardUrl, name);
@@ -79,7 +79,7 @@ namespace charlie.dal
             return string.Empty;
         }
 
-        public IEnumerable<Task> DownloadImages(IEnumerable<CardImage> cardImages, string basePath)
+        public IEnumerable<Task> DownloadImagesAsync(IEnumerable<CardImage> cardImages, string basePath)
         {
             if (_httpClient == null)
                 _httpClient = _clientFactory.CreateClient();
@@ -88,13 +88,13 @@ namespace charlie.dal
 
             foreach (var cardImage in cardImages)
             {
-                tasks.Add(DownloadImages(cardImage, basePath));
+                tasks.Add(DownloadImagesAsync(cardImage, basePath));
             }
 
             return tasks;
         }
 
-        public Task DownloadImages(CardImage cardImage, string basePath)
+        public Task DownloadImagesAsync(CardImage cardImage, string basePath)
         {
             if (_httpClient == null)
                 _httpClient = _clientFactory.CreateClient();

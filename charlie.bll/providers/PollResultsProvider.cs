@@ -20,12 +20,12 @@ namespace charlie.bll.providers
 
         public async Task<PollResults> GetPollResults(string id, string ipAddress)
         {
-            return await _pollRepository.GetPollResults(id, ipAddress);
+            return await _pollRepository.GetPollResultsAsync(id, ipAddress);
         }
 
         public async Task<bool> SubmitResults(string id, string selectedChoice, string ipAddress)
         {
-            var poll = await _pollRepository.GetPoll(id);
+            var poll = await _pollRepository.GetPollAsync(id);
 
             var date = poll.expirationDate;
             var time = getTimeSpan(poll);
@@ -47,7 +47,7 @@ namespace charlie.bll.providers
             if (choice != null)
             {
                 choice.respondants.Add(ipAddress);
-                return await _pollRepository.SavePoll(poll);
+                return await _pollRepository.SavePollAsync(poll);
             }
 
             return false;

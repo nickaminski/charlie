@@ -27,7 +27,7 @@ namespace charlie.api.Controllers
             {
                 if (!string.IsNullOrEmpty(id))
                 {
-                    var user = await _userProv.GetUserById(id);
+                    var user = await _userProv.GetUserByIdAsync(id);
                     if (user != null)
                         return Ok(user);
                 }

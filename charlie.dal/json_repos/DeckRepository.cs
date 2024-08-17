@@ -23,9 +23,9 @@ namespace charlie.dal.json_repos
                 Directory.CreateDirectory(_path);
         }
 
-        public async Task<Deck> GetDeckById(Guid id)
+        public async Task<Deck> GetDeckByIdAsync(Guid id)
         {
-            var list = (await GetDecks()).ToList();
+            var list = (await GetDecksAsync()).ToList();
 
             var index = list.BinarySearch(new Deck() { deck_id = id }, new DeckComparer());
             if (index >= 0)
@@ -33,9 +33,9 @@ namespace charlie.dal.json_repos
             return null;
         }
 
-        public async Task<Deck> SaveDeck(Deck deck)
+        public async Task<Deck> SaveDeckAsync(Deck deck)
         {
-            var list = (await GetDecks()).ToList();
+            var list = (await GetDecksAsync()).ToList();
 
             deck.deck_id ??= Guid.NewGuid();
 
@@ -69,9 +69,9 @@ namespace charlie.dal.json_repos
             return deck;
         }
 
-        public async Task<bool> DeleteDeck(Guid id)
+        public async Task<bool> DeleteDeckAsync(Guid id)
         {
-            var list = (await GetDecks()).ToList();
+            var list = (await GetDecksAsync()).ToList();
 
             int index = -1;
             index = list.FindIndex(x => x.deck_id.Value.ToString().CompareTo(id.ToString()) == 0);
@@ -88,7 +88,7 @@ namespace charlie.dal.json_repos
             return true;
         }
 
-        public async Task<IEnumerable<Deck>> GetDecks()
+        public async Task<IEnumerable<Deck>> GetDecksAsync()
         {
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);

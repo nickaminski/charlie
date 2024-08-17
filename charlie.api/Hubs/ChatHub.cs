@@ -1,5 +1,4 @@
 ﻿using charlie.bll.interfaces;
-using charlie.dto.User;
 using charlie.dto;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
@@ -38,7 +37,7 @@ namespace charlie.api.Hubs
         public async Task<bool> setUpChannels(string id)
         {
             _logger.ServerLogInfo("setting up client channels");
-            var user = await _userProv.GetUserById(id);
+            var user = await _userProv.GetUserByIdAsync(id);
 
             if (user == null)
             {
@@ -59,7 +58,7 @@ namespace charlie.api.Hubs
                 _logger.ServerLogInfo("client joining channel: {0}", channelId);
                 await Task.WhenAll(
                     Groups.AddToGroupAsync(Context.ConnectionId, channelId),
-                    _chatProv.JoinChatRoom(channelId, Context.Items["UserId"].ToString())
+                    _chatProv.JoinChatRoomAsync(channelId, Context.Items["UserId"].ToString())
                 );
 
                 return true;
@@ -76,7 +75,7 @@ namespace charlie.api.Hubs
                 {
                     await Task.WhenAll(
                         Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId),
-                        _chatProv.LeaveChatRoom(channelId, Context.Items["UserId"].ToString())
+                        _chatProv.LeaveChatRoomAsync(channelId, Context.Items["UserId"].ToString())
                     );
                     
                     var message = string.Format("{0} has left", GetUsername(), channelId);
@@ -97,7 +96,6 @@ namespace charlie.api.Hubs
         {
             try
             {
-                var tasks = new List<Task>();
                 if (packet.Username != "System")
                 {
                     packet.Username = GetUsername();
@@ -109,7 +107,7 @@ namespace charlie.api.Hubs
                 if (!string.IsNullOrEmpty(channelId))
                 {
                     await Task.WhenAll(
-                        _chatProv.SaveMessageToChatRoomChannel(packet),
+                        _chatProv.SaveMessageToChatRoomChannelAsync(packet),
                         Clients.Group(channelId).SendAsync("broadcastToChannel", packet)
                     );
                 }

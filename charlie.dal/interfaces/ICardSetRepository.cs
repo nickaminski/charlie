@@ -6,7 +6,7 @@ namespace charlie.dal.interfaces
 {
     public interface ICardSetRepository
     {
-        Task<IEnumerable<CardSet>> GetAll();
-        Task WriteCardSetData(string data);
+        Task<IEnumerable<CardSet>> GetAllAsync();
+        Task WriteCardSetDataAsync(string data);
     }
 }

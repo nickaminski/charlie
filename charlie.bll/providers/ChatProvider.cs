@@ -22,72 +22,72 @@ namespace charlie.bll.providers
             _userRepo = userRepo;
         }
 
-        public async Task<ChatRoom> CreateChatRoom(string chatRoomName, string ownerId)
+        public Task<ChatRoom> CreateChatRoomAsync(string chatRoomName, string ownerId)
         {
             var chatRoomMetaData = new ChatRoomMetaData() { Name = chatRoomName, OwnerUserId = ownerId, CreatedDate = _time.CurrentDateTime() };
-            return await _chatRepo.CreateChatRoom(chatRoomMetaData);
+            return _chatRepo.CreateChatRoomAsync(chatRoomMetaData);
         }
 
-        public async Task<IEnumerable<ChatRoomMetaData>> GetAllMetadata()
+        public Task<IEnumerable<ChatRoomMetaData>> GetAllMetadataAsync()
         {
-            return await _chatRepo.GetAllMetadata();
+            return _chatRepo.GetAllMetadataAsync();
         }
 
-        public async Task<IEnumerable<MessagePacket>> GetChatRoomChannelHistory(string channelId)
+        public async Task<IEnumerable<MessagePacket>> GetChatRoomChannelHistoryAsync(string channelId)
         {
-            var chatRoom = await _chatRepo.GetChatRoom(channelId);
+            var chatRoom = await _chatRepo.GetChatRoomAsync(channelId);
             return chatRoom.ChatHistory;
         }
 
-        public async Task<bool> JoinChatRoom(string chatRoomId, string userId)
+        public async Task<bool> JoinChatRoomAsync(string chatRoomId, string userId)
         {
-            var user = await _userRepo.GetUserProfileById(userId);
+            var user = await _userRepo.GetUserProfileByIdAsync(userId);
             user.Channels.Add(chatRoomId);
 
-            var chatRoom = await _chatRepo.GetChatRoom(chatRoomId);
+            var chatRoom = await _chatRepo.GetChatRoomAsync(chatRoomId);
             chatRoom.MetaData.UserIds.Add(userId);
 
             await Task.WhenAll(
-                _chatRepo.SaveChatRoom(chatRoom),
-                _userRepo.SaveUser(user)
+                _chatRepo.SaveChatRoomAsync(chatRoom),
+                _userRepo.SaveUserAsync(user)
             );
 
             return true;
         }
 
-        public async Task<bool> LeaveChatRoom(string chatRoomId, string userId)
+        public async Task<bool> LeaveChatRoomAsync(string chatRoomId, string userId)
         {
-            var user = await _userRepo.GetUserProfileById(userId);
+            var user = await _userRepo.GetUserProfileByIdAsync(userId);
 
             user.Channels.Remove(chatRoomId);
-            var chatRoom = await _chatRepo.GetChatRoom(chatRoomId);
+            var chatRoom = await _chatRepo.GetChatRoomAsync(chatRoomId);
             chatRoom.MetaData.UserIds.Remove(userId);
 
             await Task.WhenAll(
-                _chatRepo.SaveChatRoom(chatRoom), 
-                _userRepo.SaveUser(user)
+                _chatRepo.SaveChatRoomAsync(chatRoom), 
+                _userRepo.SaveUserAsync(user)
             );
 
             return true;
         }
 
-        public async Task<bool> LeaveChatRooms(IEnumerable<string> chatRoomIds, string userId)
+        public async Task<bool> LeaveChatRoomsAsync(IEnumerable<string> chatRoomIds, string userId)
         {
-            var user = await _userRepo.GetUserProfileById(userId);
+            var user = await _userRepo.GetUserProfileByIdAsync(userId);
             foreach (var item in chatRoomIds)
             {
-                var chatRoom = await _chatRepo.GetChatRoom(item);
+                var chatRoom = await _chatRepo.GetChatRoomAsync(item);
                 chatRoom.MetaData.UserIds.Remove(userId);
                 user.Channels.Remove(item);
-                await _chatRepo.SaveChatRoom(chatRoom);
+                await _chatRepo.SaveChatRoomAsync(chatRoom);
             }
-            await _userRepo.SaveUser(user);
+            await _userRepo.SaveUserAsync(user);
             return true;
         }
 
-        public async Task<bool> SaveMessageToChatRoomChannel(MessagePacket message)
+        public Task<bool> SaveMessageToChatRoomChannelAsync(MessagePacket message)
         {
-            return await _chatRepo.SaveMessageToChatRoomChannel(message);
+            return _chatRepo.SaveMessageToChatRoomChannelAsync(message);
         }
 
     }

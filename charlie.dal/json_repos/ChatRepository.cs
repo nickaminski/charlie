@@ -25,33 +25,33 @@ namespace charlie.dal.json_repos
             EnsureSystemFilesExist();
         }
 
-        public async Task<ChatRoom> CreateChatRoom(ChatRoomMetaData data)
+        public async Task<ChatRoom> CreateChatRoomAsync(ChatRoomMetaData data)
         {
             data.Id = Guid.NewGuid();
             var newChatRoom = new ChatRoom() { MetaData = data };
             var filePath = getFilePath(data.Id.ToString());
             await File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(newChatRoom));
             var metadataPath = getFilePath("meta_table");
-            var metadata = await GetAllMetadata();
-            metadata.Add(data);
-            await WriteMetadata(metadata);
+            var metadata = await GetAllMetadataAsync();
+            metadata.ToList().Add(data);
+            await WriteMetadataAsync(metadata);
             return newChatRoom;
         }
 
-        public async Task<List<ChatRoomMetaData>> GetAllMetadata()
+        public async Task<IEnumerable<ChatRoomMetaData>> GetAllMetadataAsync()
         {
             var jsonString = await File.ReadAllTextAsync(getFilePath("meta_table"));
             return JsonConvert.DeserializeObject<List<ChatRoomMetaData>>(jsonString);
         }
 
-        public async Task<bool> WriteMetadata(IEnumerable<ChatRoomMetaData> data)
+        public async Task<bool> WriteMetadataAsync(IEnumerable<ChatRoomMetaData> data)
         {
             var metadataPath = getFilePath("meta_table");
             await File.WriteAllTextAsync(metadataPath, JsonConvert.SerializeObject(data));
             return true;
         }
 
-        public async Task<ChatRoom> GetChatRoom(string chatRoomId)
+        public async Task<ChatRoom> GetChatRoomAsync(string chatRoomId)
         {
             var filePath = getFilePath(chatRoomId);
             if (!File.Exists(filePath))
@@ -61,22 +61,22 @@ namespace charlie.dal.json_repos
             return JsonConvert.DeserializeObject<ChatRoom>(jsonString);
         }
 
-        public async Task<bool> SaveChatRoom(ChatRoom data)
+        public async Task<bool> SaveChatRoomAsync(ChatRoom data)
         {
             var filePath = getFilePath(data.MetaData.Id?.ToString());
             if (!File.Exists(filePath))
                 return false;
 
-            var allMetadata = await GetAllMetadata();
-            var idx = allMetadata.FindIndex(x => x.Id == data.MetaData.Id);
-            allMetadata[idx] = data.MetaData;
-            await WriteMetadata(allMetadata);
+            var allMetadata = await GetAllMetadataAsync();
+            var idx = allMetadata.ToList().FindIndex(x => x.Id == data.MetaData.Id);
+            allMetadata.ToList()[idx] = data.MetaData;
+            await WriteMetadataAsync(allMetadata);
 
             await File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(data));
             return true;
         }
 
-        public async Task<bool> SaveMessageToChatRoomChannel(MessagePacket message)
+        public async Task<bool> SaveMessageToChatRoomChannelAsync(MessagePacket message)
         {
             var filePath = getFilePath(message.ChannelId);
             if (!File.Exists(filePath))

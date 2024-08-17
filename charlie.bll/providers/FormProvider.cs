@@ -25,7 +25,7 @@ namespace charlie.bll.providers
 
             try
             {
-                var form = await _formRepo.SaveForm(newForm);
+                var form = await _formRepo.SaveFormAsync(newForm);
                 return form.formId;
             }
             catch(Exception e)
@@ -52,7 +52,7 @@ namespace charlie.bll.providers
         public async Task<FormModel> GetById(string id)
         {
             _logger.ServerLogInfo("Getting form {0}", id);
-            var form = await _formRepo.GetForm(id);
+            var form = await _formRepo.GetFormAsync(id);
 
             if (form == null)
                 return null;
@@ -71,7 +71,7 @@ namespace charlie.bll.providers
         public async Task<IEnumerable<FormModel>> GetAll()
         {
             _logger.ServerLogInfo("Getting all forms");
-            var forms = await _formRepo.GetAll();
+            var forms = await _formRepo.GetAllAsync();
             foreach (var form in forms)
             {
                 foreach (var section in form.sections)

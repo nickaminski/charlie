@@ -36,7 +36,7 @@ namespace charlie.bll.providers
         public async Task AddToCollection(IEnumerable<Card> newCards)
         {
             _logger.ServerLogInfo("Adding {0} cards to collection", newCards.Count());
-            await _cardRepo.AddToCollection(newCards);
+            await _cardRepo.AddToCollectionAsync(newCards);
         }
 
         public void DeleteCollection()
@@ -50,13 +50,13 @@ namespace charlie.bll.providers
             if (string.IsNullOrEmpty(setName))
                 throw new HttpResponseException(400, "setName cannot be empty.");
 
-            var results = await _cardRepo.GetAllCardsInSet(setName);
+            var results = await _cardRepo.GetAllCardsInSetAsync(setName);
 
             if (results == null || results.Count() == 0)
             {
                 _logger.ServerLogInfo("Fetching set: {0} from YGoPro", setName);
                 var path = _configuration["CardImagesPath"];
-                var cardSetData = await _ygoRepo.GetAllCardsInSet(setName);
+                var cardSetData = await _ygoRepo.GetAllCardsInSetAsync(setName);
 
                 if (!string.IsNullOrEmpty(cardSetData))
                 {
@@ -67,7 +67,7 @@ namespace charlie.bll.providers
                     Directory.CreateDirectory(Path.Combine(path, "cards_cropped"));
                     foreach (var card in obj.data)
                     {
-                        tasks.AddRange(_ygoRepo.DownloadImages(card.card_images, path));
+                        tasks.AddRange(_ygoRepo.DownloadImagesAsync(card.card_images, path));
 
                         foreach (var item in card.card_images)
                         {
@@ -77,7 +77,7 @@ namespace charlie.bll.providers
                         }
                     }
                     var unwrappedData = JsonConvert.SerializeObject(obj.data);
-                    tasks.Add(_cardRepo.WriteCardDataToSetFile(unwrappedData, setName));
+                    tasks.Add(_cardRepo.WriteCardDataToSetFileAsync(unwrappedData, setName));
                     await Task.WhenAll(tasks);
                     return obj.data;
                 }
@@ -93,12 +93,12 @@ namespace charlie.bll.providers
 
         public async Task<Card> GetCardById(int id)
         {
-            var results = await _cardRepo.GetById(id);
+            var results = await _cardRepo.GetByIdAsync(id);
 
             if (results == null)
             {
                 _logger.ServerLogInfo("Fetching card id: {0} from YGoPro", id);
-                var cardData = await _ygoRepo.GetCardById(id);
+                var cardData = await _ygoRepo.GetCardByIdAsync(id);
 
                 if (!string.IsNullOrEmpty(cardData))
                 {
@@ -119,12 +119,12 @@ namespace charlie.bll.providers
             if (string.IsNullOrEmpty(name))
                 throw new HttpResponseException(400, "name cannot be empty.");
 
-            var results = await _cardRepo.GetByName(name);
+            var results = await _cardRepo.GetByNameAsync(name);
 
             if (results == null)
             {
                 _logger.ServerLogInfo("Fetching card name: {0} from YGoPro", name);
-                var cardData = await _ygoRepo.GetCardByName(name);
+                var cardData = await _ygoRepo.GetCardByNameAsync(name);
 
                 if (!string.IsNullOrEmpty(cardData))
                 {
@@ -143,13 +143,13 @@ namespace charlie.bll.providers
         public async Task<CardCollection> GetCollection()
         {
             _logger.ServerLogInfo("Retrieving collection");
-            return await _cardRepo.GetCollection();
+            return await _cardRepo.GetCollectionAsync();
         }
 
         public async Task<IEnumerable<Card>> OpenPack(string setName)
         {
             var random = new Random();
-            var setCards = await _cardRepo.GetAllCardsInSet(setName);
+            var setCards = await _cardRepo.GetAllCardsInSetAsync(setName);
             var set = await _setProv.GetSetByName(setName);
 
             var rarityMap = new Dictionary<int, List<Card>>();
@@ -249,7 +249,7 @@ namespace charlie.bll.providers
             Directory.CreateDirectory(Path.Combine(path, "cards_small"));
             Directory.CreateDirectory(Path.Combine(path, "cards_cropped"));
 
-            var taskList = _ygoRepo.DownloadImages(card.card_images, path).ToList();
+            var taskList = _ygoRepo.DownloadImagesAsync(card.card_images, path).ToList();
 
             foreach (var item in card.card_images)
             {
@@ -258,7 +258,7 @@ namespace charlie.bll.providers
                 item.image_url_cropped = string.Format("/cards_cropped/{0}.jpg", item.id);
             }
 
-            taskList.Add(_cardRepo.WriteCardDataToAllFile(JsonConvert.SerializeObject(card)));
+            taskList.Add(_cardRepo.WriteCardDataToAllFileAsync(JsonConvert.SerializeObject(card)));
 
             await Task.WhenAll(taskList);
 

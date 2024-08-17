@@ -17,7 +17,7 @@ namespace charlie.bll.providers
         }
         public async Task<string> CreatePoll(PollViewModel newPoll)
         {
-            return await _pollRepository.CreatePoll(new Poll() {
+            return await _pollRepository.CreatePollAsync(new Poll() {
                  id = newPoll.id,
                  expirationDate = newPoll.expirationDate,
                  expirationTime = newPoll.expirationTime,
@@ -28,7 +28,7 @@ namespace charlie.bll.providers
 
         public async Task<IEnumerable<PollViewModel>> GetAll(string clientIp)
         {
-            var polls = await _pollRepository.GetAll();
+            var polls = await _pollRepository.GetAllAsync();
             var viewModels = new List<PollViewModel>();
 
             foreach (var item in polls)
@@ -54,7 +54,7 @@ namespace charlie.bll.providers
 
         public async Task<PollViewModel> GetPoll(string id, string clientIp)
         {
-            var poll = await _pollRepository.GetPoll(id);
+            var poll = await _pollRepository.GetPollAsync(id);
 
             var p = new PollViewModel()
             {

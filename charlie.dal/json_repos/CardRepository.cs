@@ -21,7 +21,7 @@ namespace charlie.dal.json_repos
                 Directory.CreateDirectory(_path);
         }
 
-        public async Task<IEnumerable<Card>> GetAllCardsInSet(string setName)
+        public async Task<IEnumerable<Card>> GetAllCardsInSetAsync(string setName)
         {
             var filePath = getFilePath(setName);
             if (!File.Exists(filePath))
@@ -31,7 +31,7 @@ namespace charlie.dal.json_repos
             return JsonConvert.DeserializeObject<List<Card>>(jsonString);
         }
 
-        public async Task WriteCardDataToSetFile(string data, string setName)
+        public async Task WriteCardDataToSetFileAsync(string data, string setName)
         {
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
@@ -40,7 +40,7 @@ namespace charlie.dal.json_repos
             await File.WriteAllTextAsync(filePath, data);
         }
 
-        public async Task<Card> GetById(int id)
+        public async Task<Card> GetByIdAsync(int id)
         {
             var filePath = getAllCardsFilePath();
             if (!File.Exists(filePath))
@@ -54,7 +54,7 @@ namespace charlie.dal.json_repos
             return list.FirstOrDefault(x => x.id == id);
         }
 
-        public async Task<Card> GetByName(string name)
+        public async Task<Card> GetByNameAsync(string name)
         {
             var filePath = getAllCardsFilePath();
             if (!File.Exists(filePath))
@@ -68,7 +68,7 @@ namespace charlie.dal.json_repos
             return list.FirstOrDefault(x => x.name.Equals(name));
         }
 
-        public async Task WriteCardDataToAllFile(string data)
+        public async Task WriteCardDataToAllFileAsync(string data)
         {
             var filePath = getAllCardsFilePath();
             if (!File.Exists(filePath))
@@ -101,7 +101,7 @@ namespace charlie.dal.json_repos
         }
 
 
-        public async Task<CardCollection> GetCollection()
+        public async Task<CardCollection> GetCollectionAsync()
         {
             var filePath = getCollectionPath();
             if (!File.Exists(filePath))
@@ -117,7 +117,7 @@ namespace charlie.dal.json_repos
             return collection;
         }
 
-        public async Task AddToCollection(IEnumerable<Card> newCards)
+        public async Task AddToCollectionAsync(IEnumerable<Card> newCards)
         {
             var filePath = getCollectionPath();
             if (!File.Exists(filePath))

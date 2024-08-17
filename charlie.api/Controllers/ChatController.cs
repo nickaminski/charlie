@@ -22,7 +22,7 @@ namespace charlie.api.Controllers
         public async Task<IActionResult> GetChatRoomList()
         {
             _logger.ServerLogInfo("/Chat/GetChatRoomList");
-            return Ok(await _chatProvider.GetAllMetadata());
+            return Ok(await _chatProvider.GetAllMetadataAsync());
         }
 
         [HttpGet("[action]")]
@@ -33,7 +33,7 @@ namespace charlie.api.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest();
 
-            var history = await _chatProvider.GetChatRoomChannelHistory(id);
+            var history = await _chatProvider.GetChatRoomChannelHistoryAsync(id);
             if (history == null)
                 return NotFound();
 

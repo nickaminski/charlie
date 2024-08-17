@@ -6,8 +6,8 @@ namespace charlie.dal.interfaces
 {
     public interface IFormRepository
     {
-        Task<FormModel> SaveForm(FormModel form);
-        Task<FormModel> GetForm(string id);
-        Task<IEnumerable<FormModel>> GetAll();
+        Task<FormModel> SaveFormAsync(FormModel form);
+        Task<FormModel> GetFormAsync(string id);
+        Task<IEnumerable<FormModel>> GetAllAsync();
     }
 }

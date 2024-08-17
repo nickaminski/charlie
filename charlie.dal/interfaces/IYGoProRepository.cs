@@ -6,11 +6,11 @@ namespace charlie.dal.interfaces
 {
     public interface IYGoProRepository
     {
-        Task<string> GetAllCardsInSet(string setName);
-        Task<string> GetCardById(int id);
-        Task<string> GetCardByName(string name);
-        Task<string> GetAllCardSets();
-        IEnumerable<Task> DownloadImages(IEnumerable<CardImage> cardImages, string basePath);
-        Task DownloadImages(CardImage cardImage, string basePath);
+        Task<string> GetAllCardsInSetAsync(string setName);
+        Task<string> GetCardByIdAsync(int id);
+        Task<string> GetCardByNameAsync(string name);
+        Task<string> GetAllCardSetsAsync();
+        IEnumerable<Task> DownloadImagesAsync(IEnumerable<CardImage> cardImages, string basePath);
+        Task DownloadImagesAsync(CardImage cardImage, string basePath);
     }
 }

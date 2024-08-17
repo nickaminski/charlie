@@ -20,7 +20,7 @@ namespace charlie.dal.json_repos
                 Directory.CreateDirectory(_path);
         }
 
-        public async Task<IEnumerable<CardSet>> GetAll()
+        public async Task<IEnumerable<CardSet>> GetAllAsync()
         {
             if (!Directory.Exists(_path))
                 Directory.CreateDirectory(_path);
@@ -33,7 +33,7 @@ namespace charlie.dal.json_repos
             return JsonConvert.DeserializeObject<List<CardSet>>(jsonString);
         }
 
-        public async Task WriteCardSetData(string data)
+        public async Task WriteCardSetDataAsync(string data)
         {
             var filePath = getFilePath();
             await File.WriteAllTextAsync(filePath, data);

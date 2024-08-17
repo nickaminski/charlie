@@ -21,7 +21,7 @@ namespace charlie.dal.json_repos
                 Directory.CreateDirectory(_path);
         }
 
-        public async Task<string> CreatePoll(Poll poll)
+        public async Task<string> CreatePollAsync(Poll poll)
         {
             var filePath = "";
 
@@ -43,7 +43,7 @@ namespace charlie.dal.json_repos
             return poll.id;
         }
 
-        public async Task<IEnumerable<Poll>> GetAll()
+        public async Task<IEnumerable<Poll>> GetAllAsync()
         {
             List<Poll> polls = new List<Poll>();
             var filePaths = Directory.GetFiles(_path);
@@ -62,7 +62,7 @@ namespace charlie.dal.json_repos
             return polls;
         }
 
-        public async Task<Poll> GetPoll(string id)
+        public async Task<Poll> GetPollAsync(string id)
         {
             var path = getPollFilePath(id);
 
@@ -76,7 +76,7 @@ namespace charlie.dal.json_repos
             return null;
         }
 
-        public async Task<PollResults> GetPollResults(string id, string ipAddress)
+        public async Task<PollResults> GetPollResultsAsync(string id, string ipAddress)
         {
             var path = getPollFilePath(id);
 
@@ -109,7 +109,7 @@ namespace charlie.dal.json_repos
             return null;
         }
 
-        public async Task<bool> SavePoll(Poll poll)
+        public async Task<bool> SavePollAsync(Poll poll)
         {
             var path = getPollFilePath(poll.id);
 

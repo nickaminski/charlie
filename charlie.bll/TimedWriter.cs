@@ -6,6 +6,7 @@ using System.IO;
 using System;
 using charlie.dto;
 using System.Threading;
+using System.Text;
 
 namespace charlie.bll
 {
@@ -67,8 +68,11 @@ namespace charlie.bll
             fileStream.Seek(0, SeekOrigin.End);
             using (StreamWriter sr = new StreamWriter(fileStream))
             {
+                StringBuilder sb = new StringBuilder();
                 while (queue.Count > 0)
-                    await sr.WriteLineAsync(queue.Dequeue()).ConfigureAwait(false);
+                    sb.AppendLine(queue.Dequeue());
+
+                await sr.WriteAsync(sb.ToString()).ConfigureAwait(false);
 
                 sr.Flush();
                 sr.Close();
@@ -90,7 +94,7 @@ namespace charlie.bll
 
         public string getPath()
         {
-            return logFilePath + "Log_" + DateTime.Now.ToLocalTime().ToShortDateString().Replace('/', '-') + ".txt";
+            return logFilePath + "Log_" + DateTime.UtcNow.ToString("yyyy-MM-dd") + ".txt";
         }
 
         public void ServerLogInfo(string message)

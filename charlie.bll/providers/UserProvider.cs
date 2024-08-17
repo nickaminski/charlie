@@ -27,12 +27,12 @@ namespace charlie.bll.providers
         {
             _logger.ServerLogInfo("creating new user {0}", createUser.Username);
 
-            var user = await _userRepo.GetUserProfileByName(createUser.Username);
+            var user = await _userRepo.GetUserProfileByNameAsync(createUser.Username);
 
             if (user != null)
                 throw new HttpResponseException(400, "User already exists");
 
-            var chatRoomsMeta = (await _chatRepo.GetAllMetadata()).ToList();
+            var chatRoomsMeta = (await _chatRepo.GetAllMetadataAsync()).ToList();
             var id = chatRoomsMeta.FirstOrDefault(x => x.OwnerUserId == "system" && x.Name == "Public").Id.Value.ToString();
 
             var newUser = new UserProfile()
@@ -44,12 +44,12 @@ namespace charlie.bll.providers
                 UpdatedDate = DateTime.UtcNow,
                 DateLastLoggedIn = DateTime.UtcNow
             };
-            var chatRoom = await _chatRepo.GetChatRoom(id);
+            var chatRoom = await _chatRepo.GetChatRoomAsync(id);
             chatRoom.MetaData.UserIds.Add(newUser.UserId.ToString());
 
             await Task.WhenAll(
-                    _chatRepo.SaveChatRoom(chatRoom),
-                    _userRepo.SaveUser(newUser)
+                    _chatRepo.SaveChatRoomAsync(chatRoom),
+                    _userRepo.SaveUserAsync(newUser)
                   );
 
             return newUser;
@@ -58,39 +58,39 @@ namespace charlie.bll.providers
         public async Task<bool> DeleteUser(string id)
         {
             _logger.ServerLogInfo("deleting user {0}", id);
-            var user = await _userRepo.GetUserProfileById(id);
+            var user = await _userRepo.GetUserProfileByIdAsync(id);
             if (user == null) return false;
             foreach (var item in user.Channels)
             {
-                var chatRoom = await _chatRepo.GetChatRoom(item);
+                var chatRoom = await _chatRepo.GetChatRoomAsync(item);
                 chatRoom.MetaData.UserIds.Remove(id);
-                await _chatRepo.SaveChatRoom(chatRoom);
+                await _chatRepo.SaveChatRoomAsync(chatRoom);
             }
 
-            return await _userRepo.DeleteUser(id);
+            return await _userRepo.DeleteUserAsync(id);
         }
 
-        public async Task<UserProfile> GetUserById(string id)
+        public async Task<UserProfile> GetUserByIdAsync(string id)
         {
             _logger.ServerLogInfo("provider getting user by id {0}", id);
-            return await _userRepo.GetUserProfileById(id);
+            return await _userRepo.GetUserProfileByIdAsync(id);
         }
 
         public async Task<UserProfile> GetUserByName(string name)
         {
             _logger.ServerLogInfo("provider getting user by name {0}", name);
-            return await _userRepo.GetUserProfileByName(name);
+            return await _userRepo.GetUserProfileByNameAsync(name);
         }
 
         public async Task<IEnumerable<UserProfile>> GetUsers()
         {
             _logger.ServerLogInfo("getting all users");
-            return await _userRepo.GetUsers();
+            return await _userRepo.GetUsersAsync();
         }
 
         public async Task<UserProfile> SaveUser(UpdateUser user)
         {
-            var currentUser = await _userRepo.GetUserProfileById(user.Id.ToString());
+            var currentUser = await _userRepo.GetUserProfileByIdAsync(user.Id.ToString());
 
             if (currentUser == null)
             {
@@ -105,16 +105,16 @@ namespace charlie.bll.providers
             if (user.Channels != null) currentUser.Channels = user.Channels;
 
             currentUser.UpdatedDate = DateTime.UtcNow;
-            return await _userRepo.SaveUser(currentUser);
+            return await _userRepo.SaveUserAsync(currentUser);
         }
 
         public async Task<UserProfile> SignIn(SigninRequest request)
         {
             _logger.ServerLogInfo("signing in {0}", request.username);
-            var user = await _userRepo.GetUserProfileByName(request.username);
+            var user = await _userRepo.GetUserProfileByNameAsync(request.username);
             if (user == null) throw new HttpResponseException(404, "user not found");
             user.DateLastLoggedIn = DateTime.Now;
-            await _userRepo.SaveUser(user);
+            await _userRepo.SaveUserAsync(user);
             return user;
         }
     }

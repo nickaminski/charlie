@@ -33,7 +33,7 @@ namespace charlie.bll.providers
 
         public async Task<IEnumerable<CardSet>> GetSets(string maxYear)
         {
-            var results = await _cardSetRepo.GetAll();
+            var results = await _cardSetRepo.GetAllAsync();
 
             if (results == null || results.Count() == 0)
             {
@@ -57,7 +57,7 @@ namespace charlie.bll.providers
 
         public async Task<CardSet> GetSetByName(string name)
         {
-            var results = await _cardSetRepo.GetAll();
+            var results = await _cardSetRepo.GetAllAsync();
 
             if (results == null || results.Count() == 0)
             {
@@ -74,7 +74,7 @@ namespace charlie.bll.providers
         private async Task<IEnumerable<CardSet>> FetchSetsFromYGOPro()
         {
             _logger.ServerLogInfo("Fetching all card sets from YGoPro");
-            var cardSetData = await _ygoRepo.GetAllCardSets();
+            var cardSetData = await _ygoRepo.GetAllCardSetsAsync();
             var cardSets = JsonConvert.DeserializeObject<List<CardSet>>(cardSetData);
 
             var path = Path.Combine(Directory.GetCurrentDirectory(), _configuration["CardImagesPath"], "sets");
@@ -87,7 +87,7 @@ namespace charlie.bll.providers
             catch (Exception)
             { }
 
-            await _cardSetRepo.WriteCardSetData(cardSetData);
+            await _cardSetRepo.WriteCardSetDataAsync(cardSetData);
 
             if (!string.IsNullOrEmpty(cardSetData))
                 return JsonConvert.DeserializeObject<List<CardSet>>(cardSetData);
