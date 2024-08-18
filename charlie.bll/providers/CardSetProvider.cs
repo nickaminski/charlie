@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace charlie.bll.providers
@@ -31,13 +32,13 @@ namespace charlie.bll.providers
             _configuration = configuration;
         }
 
-        public async Task<IEnumerable<CardSet>> GetSets(string maxYear)
+        public async Task<IEnumerable<CardSet>> GetSets(string maxYear, CancellationToken token)
         {
             var results = await _cardSetRepo.GetAllAsync();
 
             if (results == null || results.Count() == 0)
             {
-                results = await FetchSetsFromYGOPro();
+                results = await FetchSetsFromYGOPro(token);
             }
             else
             {
@@ -55,13 +56,13 @@ namespace charlie.bll.providers
             return results;
         }
 
-        public async Task<CardSet> GetSetByName(string name)
+        public async Task<CardSet> GetSetByName(string name, CancellationToken token)
         {
             var results = await _cardSetRepo.GetAllAsync();
 
             if (results == null || results.Count() == 0)
             {
-                results = await FetchSetsFromYGOPro();
+                results = await FetchSetsFromYGOPro(token);
             }
             else
             {
@@ -71,10 +72,10 @@ namespace charlie.bll.providers
             return results.FirstOrDefault(x => x.set_name.Equals(name, StringComparison.OrdinalIgnoreCase));
         }
 
-        private async Task<IEnumerable<CardSet>> FetchSetsFromYGOPro()
+        private async Task<IEnumerable<CardSet>> FetchSetsFromYGOPro(CancellationToken token)
         {
             _logger.ServerLogInfo("Fetching all card sets from YGoPro");
-            var cardSetData = await _ygoRepo.GetAllCardSetsAsync();
+            var cardSetData = await _ygoRepo.GetAllCardSetsAsync(token);
             var cardSets = JsonConvert.DeserializeObject<List<CardSet>>(cardSetData);
 
             var path = Path.Combine(Directory.GetCurrentDirectory(), _configuration["CardImagesPath"], "sets");

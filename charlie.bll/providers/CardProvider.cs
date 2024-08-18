@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace charlie.bll.providers
@@ -45,7 +46,7 @@ namespace charlie.bll.providers
             _cardRepo.DeleteCollection();
         }
 
-        public async Task<IEnumerable<Card>> GetAllCardsInSet(string setName)
+        public async Task<IEnumerable<Card>> GetAllCardsInSet(string setName, CancellationToken token)
         {
             if (string.IsNullOrEmpty(setName))
                 throw new HttpResponseException(400, "setName cannot be empty.");
@@ -56,7 +57,7 @@ namespace charlie.bll.providers
             {
                 _logger.ServerLogInfo("Fetching set: {0} from YGoPro", setName);
                 var path = _configuration["CardImagesPath"];
-                var cardSetData = await _ygoRepo.GetAllCardsInSetAsync(setName);
+                var cardSetData = await _ygoRepo.GetAllCardsInSetAsync(setName, token);
 
                 if (!string.IsNullOrEmpty(cardSetData))
                 {
@@ -91,14 +92,14 @@ namespace charlie.bll.providers
             }
         }
 
-        public async Task<Card> GetCardById(int id)
+        public async Task<Card> GetCardById(int id, CancellationToken token)
         {
             var results = await _cardRepo.GetByIdAsync(id);
 
             if (results == null)
             {
                 _logger.ServerLogInfo("Fetching card id: {0} from YGoPro", id);
-                var cardData = await _ygoRepo.GetCardByIdAsync(id);
+                var cardData = await _ygoRepo.GetCardByIdAsync(id, token);
 
                 if (!string.IsNullOrEmpty(cardData))
                 {
@@ -114,7 +115,7 @@ namespace charlie.bll.providers
             }
         }
 
-        public async Task<Card> GetCardByName(string name)
+        public async Task<Card> GetCardByName(string name, CancellationToken token)
         {
             if (string.IsNullOrEmpty(name))
                 throw new HttpResponseException(400, "name cannot be empty.");
@@ -124,7 +125,7 @@ namespace charlie.bll.providers
             if (results == null)
             {
                 _logger.ServerLogInfo("Fetching card name: {0} from YGoPro", name);
-                var cardData = await _ygoRepo.GetCardByNameAsync(name);
+                var cardData = await _ygoRepo.GetCardByNameAsync(name, token);
 
                 if (!string.IsNullOrEmpty(cardData))
                 {
@@ -146,11 +147,11 @@ namespace charlie.bll.providers
             return await _cardRepo.GetCollectionAsync();
         }
 
-        public async Task<IEnumerable<Card>> OpenPack(string setName)
+        public async Task<IEnumerable<Card>> OpenPack(string setName, CancellationToken token)
         {
             var random = new Random();
             var setCards = await _cardRepo.GetAllCardsInSetAsync(setName);
-            var set = await _setProv.GetSetByName(setName);
+            var set = await _setProv.GetSetByName(setName, token);
 
             var rarityMap = new Dictionary<int, List<Card>>();
             rarityMap[0] = new List<Card>();

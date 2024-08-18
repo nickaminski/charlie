@@ -25,7 +25,7 @@ namespace charlie.bll
             messagesToWriteB = new Queue<string>();
             UseA = true;
 
-            logFilePath = configuration["Logging:LogFilePath"];
+            logFilePath = configuration["LogFilePath"];
 
             checkDirecctory();
         }

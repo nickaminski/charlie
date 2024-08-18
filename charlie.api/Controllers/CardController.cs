@@ -2,7 +2,6 @@
 using charlie.common.models;
 using charlie.dto.Card;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,6 @@ namespace charlie.api.Controllers
     [Route("api/[controller]")]
     public class CardController : ControllerBase
     {
-        IConfiguration _configuration;
         ICardSetProvider _cardSetProv;
         ICardProvider _cardProv;
         IDeckProvider _deckProv;
@@ -26,41 +24,39 @@ namespace charlie.api.Controllers
                               ICardProvider cardProv, 
                               IDeckProvider deckProv, 
                               ILogWriter logger, 
-                              ICachingService cachingService, 
-                              IConfiguration configuration)
+                              ICachingService cachingService)
         {
             _cardSetProv = cardSetProv;
             _cardProv = cardProv;
             _deckProv = deckProv;
             _logger = logger;
             _cachingService = cachingService;
-            _configuration = configuration;
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetSets([FromQuery]string maxYear)
+        public async Task<IActionResult> GetSets([FromQuery]string maxYear, CancellationToken token)
         {
             _logger.ServerLogInfo("/Card/GetAllSets");
-            var sets = await _cardSetProv.GetSets(maxYear);
+            var sets = await _cardSetProv.GetSets(maxYear, token);
             return Ok(sets);
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllCardsInSet([FromQuery]string setName = "")
+        public async Task<IActionResult> GetAllCardsInSet(CancellationToken token, [FromQuery]string setName = "")
         {
             _logger.ServerLogInfo("/Card/GetAllCardsInSet");
             if (string.IsNullOrEmpty(setName))
                 return BadRequest();
 
-            var cards = await _cardProv.GetAllCardsInSet(setName);
+            var cards = await _cardProv.GetAllCardsInSet(setName, token);
             return Ok(cards);
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetCardById([FromQuery]int id)
+        public async Task<IActionResult> GetCardById([FromQuery]int id, CancellationToken token)
         {
             _logger.ServerLogInfo("/Card/GetCardById");
-            var card = await _cardProv.GetCardById(id);
+            var card = await _cardProv.GetCardById(id, token);
             if (card == null)
                 return NotFound();
 
@@ -68,10 +64,10 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetCardByName([FromQuery]string name)
+        public async Task<IActionResult> GetCardByName([FromQuery]string name, CancellationToken token)
         {
             _logger.ServerLogInfo("/Card/GetCardByName");
-            var card = await _cardProv.GetCardByName(name);
+            var card = await _cardProv.GetCardByName(name, token);
             if (card == null)
                 return NotFound();
 
@@ -138,11 +134,11 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> StartDraft([FromQuery]string setName = "", [FromQuery] int numPacks = 5)
+        public async Task<IActionResult> StartDraft(CancellationToken token, [FromQuery]string setName = "", [FromQuery] int numPacks = 5)
         {
             if (string.IsNullOrEmpty(setName)) return BadRequest("setName must be something");
 
-            var set = await _cardProv.GetAllCardsInSet(setName);
+            var set = await _cardProv.GetAllCardsInSet(setName, token);
             if (set.Count() == 0)
                 return BadRequest("no cards in set");
 
@@ -154,14 +150,14 @@ namespace charlie.api.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> RollDraftPack([FromQuery]Guid draftKey)
+        public async Task<IActionResult> RollDraftPack([FromQuery]Guid draftKey, CancellationToken token)
         {
             var state = _cachingService.Get<DraftState>(draftKey.ToString());
 
             if (state == null || !state.draft_status.Equals("in_progress"))
                 return BadRequest("no in progress draft to continue");
 
-            var cards = await _cardProv.OpenPack(state.set_name);
+            var cards = await _cardProv.OpenPack(state.set_name, token);
 
             state.current_pack++;
 
