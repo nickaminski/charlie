@@ -17,26 +17,22 @@ namespace charlie.api.Controllers
         ICardSetProvider _cardSetProv;
         ICardProvider _cardProv;
         IDeckProvider _deckProv;
-        ILogWriter _logger;
         ICachingService _cachingService;
                                                                                                                                                           
-        public CardController(ICardSetProvider cardSetProv, 
-                              ICardProvider cardProv, 
-                              IDeckProvider deckProv, 
-                              ILogWriter logger, 
+        public CardController(ICardSetProvider cardSetProv,
+                              ICardProvider cardProv,
+                              IDeckProvider deckProv,
                               ICachingService cachingService)
         {
             _cardSetProv = cardSetProv;
             _cardProv = cardProv;
             _deckProv = deckProv;
-            _logger = logger;
             _cachingService = cachingService;
         }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetSets([FromQuery]string maxYear, CancellationToken token)
         {
-            _logger.ServerLogInfo("/Card/GetAllSets");
             var sets = await _cardSetProv.GetSets(maxYear, token);
             return Ok(sets);
         }
@@ -44,7 +40,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllCardsInSet(CancellationToken token, [FromQuery]string setName = "")
         {
-            _logger.ServerLogInfo("/Card/GetAllCardsInSet");
             if (string.IsNullOrEmpty(setName))
                 return BadRequest();
 
@@ -55,7 +50,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCardById([FromQuery]int id, CancellationToken token)
         {
-            _logger.ServerLogInfo("/Card/GetCardById");
             var card = await _cardProv.GetCardById(id, token);
             if (card == null)
                 return NotFound();
@@ -66,7 +60,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCardByName([FromQuery]string name, CancellationToken token)
         {
-            _logger.ServerLogInfo("/Card/GetCardByName");
             var card = await _cardProv.GetCardByName(name, token);
             if (card == null)
                 return NotFound();
@@ -77,7 +70,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetDeckById([FromQuery]string guid)
         {
-            _logger.ServerLogInfo("/Card/GetDeckById");
             var deck = await _deckProv.GetDeckById(guid);
             if (deck == null)
                 return NotFound();
@@ -88,7 +80,6 @@ namespace charlie.api.Controllers
         [HttpPost("[action]")] 
         public async Task<IActionResult> SaveDeck([FromBody]Deck deck)
         {
-            _logger.ServerLogInfo("/Card/SaveDeck");
             var result = await _deckProv.SaveDeck(deck);
             return Ok(result);
         }
@@ -96,7 +87,6 @@ namespace charlie.api.Controllers
         [HttpDelete("[action]")]
         public async Task<IActionResult> DeleteDeck([FromQuery]string guid)
         {
-            _logger.ServerLogInfo("/Card/DeleteDeck");
             var result = await _deckProv.DeleteDeck(guid);
             return Ok(result);
         }
@@ -104,7 +94,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetDecks()
         {
-            _logger.ServerLogInfo("/Card/GetDecks");
             var decks = await _deckProv.GetDecks();
             return Ok(decks);
         }
@@ -112,7 +101,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCollection()
         {
-            _logger.ServerLogInfo("/Card/GetCollection");
             var collection = await _cardProv.GetCollection();
             return Ok(collection);
         }
@@ -120,7 +108,6 @@ namespace charlie.api.Controllers
         [HttpDelete("[action]")]
         public IActionResult DeleteCollection()
         {
-            _logger.ServerLogInfo("/Card/DeleteCollection");
             _cardProv.DeleteCollection();
             return Ok(true);
         }
@@ -128,7 +115,6 @@ namespace charlie.api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> AddToCollection([FromBody]List<Card> newCards)
         {
-            _logger.ServerLogInfo("/Card/AddToCollection");
             await _cardProv.AddToCollection(newCards);
             return Ok(true);
         }

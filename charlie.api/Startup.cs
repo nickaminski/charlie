@@ -68,6 +68,7 @@ namespace charlie.api
 
             services.AddControllers(options =>
             {
+                options.Filters.Add<LoggingFilter>();
                 options.Filters.Add<HttpResponseExceptionFilter>();
             }).AddNewtonsoftJson();
 

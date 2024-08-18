@@ -14,19 +14,16 @@ namespace charlie.api.Controllers
     {
         IPollProvider _pollProvider;
         IPollResultsProvider _resultsProvider;
-        ILogWriter _logger;
         ITimeProvider _time;
         IHubContext<MessageHub> _messageHub;
 
-        public PollController(ILogWriter logger, 
-                              IPollProvider pollProvider, 
+        public PollController(IPollProvider pollProvider, 
                               IPollResultsProvider resultsProvider, 
                               IHubContext<MessageHub> messageHub,
                               ITimeProvider time)
         {
             _pollProvider = pollProvider;
             _resultsProvider = resultsProvider;
-            _logger = logger;
             _messageHub = messageHub;
             _time = time;
         }
@@ -34,7 +31,6 @@ namespace charlie.api.Controllers
         [HttpPut("[action]")]
         public async Task<IActionResult> CreatePoll([FromBody]PollViewModel newPoll)
         {
-             _logger.ServerLogInfo("/Poll/CreatePoll");
             var pollId = await _pollProvider.CreatePoll(newPoll);
             newPoll.id = pollId;
             return Ok(newPoll);
@@ -42,10 +38,7 @@ namespace charlie.api.Controllers
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAll()
-        {
-            _logger.ServerLogInfo("/Poll/GetAll");
-
-            var clientIp = GetClientIp();
+        {   var clientIp = GetClientIp();
             var polls = await _pollProvider.GetAll(clientIp);
             return Ok(polls);
         }
@@ -53,7 +46,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetPoll([FromQuery]string id)
         {
-            _logger.ServerLogInfo("/Poll/GetPoll/?id=" + id);
             var clientIp = GetClientIp();
             var poll = await _pollProvider.GetPoll(id, clientIp);
             if (poll == null)
@@ -65,7 +57,6 @@ namespace charlie.api.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetPollResults([FromQuery]string id)
         {
-            _logger.ServerLogInfo("/Poll/GetPollResults/?id=" + id);
             var clientIp = GetClientIp();
             var results = await _resultsProvider.GetPollResults(id, clientIp);
             if (results == null)
@@ -77,7 +68,6 @@ namespace charlie.api.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> SubmitPollResponse([FromBody] SubmitPollResponse response)
         {
-            _logger.ServerLogInfo("/Poll/SubmitPollResponse/?id=" + response.id + "&selectedChoice="+response.selectedChoice);
             var clientIp = GetClientIp();
 
             var results = await _resultsProvider.SubmitResults(response.id, response.selectedChoice, clientIp);
