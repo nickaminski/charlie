@@ -12,7 +12,6 @@ namespace charlie.api.Controllers
 
         public ChatController(IChatProvider chatProvider)
         {
-            _logger = logger;
             _chatProvider = chatProvider;
         }
 
