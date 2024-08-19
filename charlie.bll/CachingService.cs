@@ -20,7 +20,9 @@ namespace charlie.bll
         public async Task<T> GetAsync<T>(string key, CancellationToken token = default)
         {
             var value = await GetStringAsync(key, token);
-            return JsonConvert.DeserializeObject<T>(value);
+            if (value != null)
+                return JsonConvert.DeserializeObject<T>(value);
+            return default(T);
         }
 
         public Task<string> GetStringAsync(string key, CancellationToken token = default)
@@ -77,7 +79,9 @@ namespace charlie.bll
         public T Get<T>(string key)
         {
             var value = GetString(key);
-            return JsonConvert.DeserializeObject<T>(value);
+            if (value != null)
+                return JsonConvert.DeserializeObject<T>(value);
+            return default(T);
         }
 
         public void Set<T>(string key, T value, DistributedCacheEntryOptions options)

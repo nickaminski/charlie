@@ -1,5 +1,4 @@
 ﻿using charlie.bll.interfaces;
-using charlie.common.models;
 using charlie.dto.Card;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -129,10 +128,21 @@ namespace charlie.api.Controllers
                 return BadRequest("no cards in set");
 
             var draftKey = Guid.NewGuid();
-            var state = new DraftState() { draft_status = "in_progress", current_pack = 0, set_name = setName, num_packs = numPacks };
+            var state = new DraftState() { draft_status = "in_progress", current_pack = 1, set_name = setName, num_packs = numPacks, cards = new List<Card>() };
             _cachingService.Set(draftKey.ToString(), state);
 
             return Ok(draftKey);
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetDraftState([FromQuery]Guid draftKey)
+        {
+            var state = _cachingService.Get<DraftState>(draftKey.ToString());
+            if (state != null)
+            {
+                return Ok(state);
+            }
+            return NotFound();
         }
 
         [HttpGet("[action]")]
@@ -146,12 +156,9 @@ namespace charlie.api.Controllers
             var cards = await _cardProv.OpenPack(state.set_name, token);
 
             state.current_pack++;
+            state.cards = state.cards.Concat(cards);
 
-            if (state.current_pack > state.num_packs)
-            {
-                _cachingService.Remove(draftKey.ToString());
-            }
-            else
+            if (state.current_pack <= state.num_packs)
             {
                 _cachingService.Set(draftKey.ToString(), state);
             }
