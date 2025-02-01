@@ -1,5 +1,4 @@
 ﻿using charlie.dal.interfaces;
-using charlie.dto.Card;
 using charlie.dto.User;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -62,17 +61,17 @@ namespace charlie.dal.json_repos
 
         public async Task<UserProfile> GetUserProfileByNameAsync(string name)
         {
-            var list = (await GetUsersAsync()).ToList();
+            var list = await GetUsersAsync();
             return list.FirstOrDefault(x => x.Username.Equals(name, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public async Task<UserProfile> GetUserProfileByIdAsync(string id)
+        public async Task<UserProfile> GetUserProfileByIdAsync(Guid id)
         {
-            var list = (await GetUsersAsync()).ToList();
-            return list.FirstOrDefault(x => x.UserId.Equals(id));
+            var list = await GetUsersAsync();
+            return list.FirstOrDefault(x => x.UserId.CompareTo(id) == 0);
         }
 
-        public async Task<bool> DeleteUserAsync(string id)
+        public async Task<bool> DeleteUserAsync(Guid id)
         {
             var list = (await GetUsersAsync()).ToList();
 

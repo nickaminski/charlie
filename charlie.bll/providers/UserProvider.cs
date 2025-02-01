@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace charlie.bll.providers
 {
@@ -58,8 +57,12 @@ namespace charlie.bll.providers
         public async Task<bool> DeleteUser(string id)
         {
             _logger.ServerLogInfo("deleting user {0}", id);
-            var user = await _userRepo.GetUserProfileByIdAsync(id);
+
+            var gid = Guid.Parse(id);
+            var user = await _userRepo.GetUserProfileByIdAsync(gid);
+
             if (user == null) return false;
+
             foreach (var item in user.Channels)
             {
                 var chatRoom = await _chatRepo.GetChatRoomAsync(item);
@@ -67,13 +70,14 @@ namespace charlie.bll.providers
                 await _chatRepo.SaveChatRoomAsync(chatRoom);
             }
 
-            return await _userRepo.DeleteUserAsync(id);
+            return await _userRepo.DeleteUserAsync(gid);
         }
 
         public async Task<UserProfile> GetUserByIdAsync(string id)
         {
             _logger.ServerLogInfo("provider getting user by id {0}", id);
-            return await _userRepo.GetUserProfileByIdAsync(id);
+
+            return await _userRepo.GetUserProfileByIdAsync(Guid.Parse(id));
         }
 
         public async Task<UserProfile> GetUserByName(string name)
@@ -90,7 +94,7 @@ namespace charlie.bll.providers
 
         public async Task<UserProfile> SaveUser(UpdateUser user)
         {
-            var currentUser = await _userRepo.GetUserProfileByIdAsync(user.Id.ToString());
+            var currentUser = await _userRepo.GetUserProfileByIdAsync(Guid.Parse(user.Id));
 
             if (currentUser == null)
             {

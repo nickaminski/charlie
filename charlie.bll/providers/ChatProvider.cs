@@ -2,6 +2,7 @@
 using charlie.dal.interfaces;
 using charlie.dto;
 using charlie.dto.Chat;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace charlie.bll.providers
 
         public async Task<bool> JoinChatRoomAsync(string chatRoomId, string userId)
         {
-            var user = await _userRepo.GetUserProfileByIdAsync(userId);
+            var user = await _userRepo.GetUserProfileByIdAsync(Guid.Parse(userId));
             user.Channels.Add(chatRoomId);
 
             var chatRoom = await _chatRepo.GetChatRoomAsync(chatRoomId);
@@ -57,7 +58,7 @@ namespace charlie.bll.providers
 
         public async Task<bool> LeaveChatRoomAsync(string chatRoomId, string userId)
         {
-            var user = await _userRepo.GetUserProfileByIdAsync(userId);
+            var user = await _userRepo.GetUserProfileByIdAsync(Guid.Parse(userId));
 
             user.Channels.Remove(chatRoomId);
             var chatRoom = await _chatRepo.GetChatRoomAsync(chatRoomId);
@@ -73,7 +74,7 @@ namespace charlie.bll.providers
 
         public async Task<bool> LeaveChatRoomsAsync(IEnumerable<string> chatRoomIds, string userId)
         {
-            var user = await _userRepo.GetUserProfileByIdAsync(userId);
+            var user = await _userRepo.GetUserProfileByIdAsync(Guid.Parse(userId));
             foreach (var item in chatRoomIds)
             {
                 var chatRoom = await _chatRepo.GetChatRoomAsync(item);
